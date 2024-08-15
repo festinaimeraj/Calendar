@@ -1,0 +1,71 @@
+/* General Styles */
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f8f9fa; /* Light gray background for general use */
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+/* Custom Styles for Employee Calendar */
+.employee-calendar .navbar {
+    background-color: #f8f9fa; /* Light gray background for employee */
+}
+
+.employee-calendar .navbar-nav .nav-link {
+    color: #007bff; /* Blue links for employee */
+}
+
+.employee-calendar .navbar-nav .nav-link:hover {
+    color: #0056b3; /* Darker blue on hover */
+}
+
+/* Custom Styles for Admin Calendar */
+.admin-calendar .navbar {
+    background-color: #343a40; /* Dark background for admin */
+}
+
+.admin-calendar .navbar-nav .nav-link {
+    color: #ffffff; /* White links for admin */
+}
+
+.admin-calendar .navbar-nav .nav-link:hover {
+    color: #cccccc; /* Light gray on hover */
+}
+
+/* Common Navbar Styles */
+.navbar-nav .nav-item {
+    margin-right: 20px;
+}
+
+.navbar-nav .dropdown-menu {
+    border: none;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+}
+
+.navbar-nav .dropdown-item {
+    padding: 10px 20px;
+}
+
+.navbar-nav .dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+/* Additional Common Styles */
+.dropdown-menu .dropdown-item {
+    color: #007bff;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    color: #fff;
+    background-color: #007bff;
+}
+
+/* Specific Styling */
+.container {
+    margin-top: 20px;
+}
