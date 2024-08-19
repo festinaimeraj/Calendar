@@ -81,7 +81,7 @@ class UserController extends Controller
 
             if(!Auth::attempt($request->only(['email','password']))){
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'message' => 'Email & Password does not match with our record.',
                 ],401);
             }

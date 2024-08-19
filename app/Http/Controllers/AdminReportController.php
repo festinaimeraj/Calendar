@@ -205,6 +205,7 @@ class AdminReportController extends Controller
             ->groupBy('leave_type')
             ->get();
 
+
         return view('admin.view-leave-reports', compact('requestsGrouped'));
     }
 }

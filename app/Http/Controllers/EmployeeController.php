@@ -45,8 +45,8 @@ class EmployeeController extends Controller
         }
 
         $user = Auth::user();
-        $startDate = \DateTime::createFromFormat('d-M-Y', $request->start_date)->format('Y-m-d');
-        $endDate = \DateTime::createFromFormat('d-M-Y', $request->end_date)->format('Y-m-d');
+        $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date)->format('Y-m-d');
+        $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date)->format('Y-m-d');
 
 
         try {

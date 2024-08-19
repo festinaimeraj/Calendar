@@ -210,10 +210,10 @@ public function showEmployee()
 
     public function viewLeaveReports()
     {
-        $requestsGrouped = LeaveRequest::select('leave_type', DB::raw('count(*) as total_requests'))
-            ->groupBy('leave_type')
-            ->get();
-    
+        $requestsGrouped = LeaveRequest::select('user_id', 'leave_type', DB::raw('count(*) as total_requests'))
+                                        ->groupBy('user_id', 'leave_type')
+                                        ->get();
+  
         return view('admin.view-leave-reports', compact('requestsGrouped'));
     }
 }
