@@ -2,6 +2,16 @@
 
 @section('title', 'Approve/Deny Leave Requests')
 
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 @section('content')
     <div class="container">
         <h1>Approve/Deny Leave Requests</h1>

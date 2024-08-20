@@ -43,10 +43,18 @@ class EmployeeController extends Controller
         if (!in_array($request->leave_type, $validLeaveTypes)) {
             return redirect()->back()->withErrors(['leave_type' => 'Invalid leave type.']);
         }
-
         $user = Auth::user();
-        $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date)->format('Y-m-d');
-        $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date)->format('Y-m-d');
+        $startDate = \DateTime::createFromFormat('d-M-Y', $request->start_date);
+$endDate = \DateTime::createFromFormat('d-M-Y', $request->end_date);
+
+if ($startDate === false || $endDate === false) {
+    // Handle the error if the date creation failed
+    return response()->json(['error' => 'Invalid date format'], 400);
+}
+
+// Format the date to 'Y-m-d' format
+$startDateFormatted = $startDate->format('Y-m-d');
+$endDateFormatted = $endDate->format('Y-m-d');
 
 
         try {

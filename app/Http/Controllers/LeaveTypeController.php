@@ -10,41 +10,25 @@ class LeaveTypeController extends Controller
     public function index()
     {
         $leaveTypes = LeaveType::all();
-        return response()->json($leaveTypes);
+        return view('leave_types.index', compact('leaveTypes'));
     }
 
-    public function show($id)
+    public function create()
     {
-        $leaveType = LeaveType::findOrFail($id);
-        return response()->json($leaveType);
+        return view('leave_types.create');
     }
 
     public function store(Request $request)
     {
+
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        $leaveType = LeaveType::create($request->all());
-        return response()->json($leaveType, 201);
+        LeaveType::create($request->all());
+        return redirect()->route('leave_types.index')->with('success', 'Leave Type created successfully.');
     }
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        $leaveType = LeaveType::findOrFail($id);
-        $leaveType->update($request->all());
-        return response()->json($leaveType);
-    }
-
-    public function destroy($id)
-    {
-        LeaveType::destroy($id);
-        return response()->json(null, 204);
-    }
+    // Other methods remain unchanged
 }

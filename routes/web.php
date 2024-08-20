@@ -42,11 +42,12 @@ Route::prefix('admin')->middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::post('/process-leave-request', [AdminController::class, 'processLeaveRequest'])->name('admin.processLeaveRequest');
     Route::get('/view-leave-reports', [AdminController::class, 'viewLeaveReports'])->name('admin.view-leave-reports');
     Route::prefix('leave-types')->group(function () {
-        Route::get('/', [LeaveTypeController::class, 'index']);
-        Route::get('/{id}', [LeaveTypeController::class, 'show']);
-        Route::post('/', [LeaveTypeController::class, 'store']);
-        Route::put('/{id}', [LeaveTypeController::class, 'update']);
-        Route::delete('/{id}', [LeaveTypeController::class, 'destroy']);
+        Route::get('/', [LeaveTypeController::class, 'index'])->name('admin.leave_types.index');
+        Route::get('/create', [LeaveTypeController::class, 'create'])->name('admin.leave_types.create');
+        Route::get('/{id}', [LeaveTypeController::class, 'show'])->name('admin.leave_types.show');
+        Route::post('/', [LeaveTypeController::class, 'store'])->name('admin.leave_types.store');
+        Route::put('/{id}', [LeaveTypeController::class, 'update'])->name('admin.leave_types.update');
+        Route::delete('/{id}', [LeaveTypeController::class, 'destroy'])->name('admin.leave_types.destroy');
     });
 });
 // Employee routes

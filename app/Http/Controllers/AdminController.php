@@ -182,13 +182,13 @@ public function showEmployee()
     {
         // Validate the incoming request
         $request->validate([
-            'id' => 'required|integer|exists:leave_requests,requestId',
+            'request_id' => 'required',
             'action' => 'required|string|in:approve,deny',
-            'response_message' => 'required|string|max:255',
+            'response' => 'required|string|max:255',
         ]);
     
         // Find the leave request and update it
-        $leaveRequest = LeaveRequest::findOrFail($request->id);
+        $leaveRequest = LeaveRequest::where('id', $request->request_id)->firstOrFail();
         $leaveRequest->answer = $request->action === 'approve' ? 'approved' : 'denied';
         $leaveRequest->response_message = $request->response;
         $leaveRequest->save();
@@ -207,7 +207,7 @@ public function showEmployee()
     
         Mail::to($email)->send(new \App\Mail\GenericMail($subject, $body));
     
-        return redirect()->route('admin.approveDenyRequests')->with('success', 'Leave request has been ' . $leaveRequest->answer . '.');
+        return redirect()->route('admin.approve-deny-requests')->with('success', 'Leave request has been ' . $leaveRequest->answer . '.');
     }
     
     public function viewLeaveReports()

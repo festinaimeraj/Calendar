@@ -7,7 +7,7 @@
         <h1>Leave Types</h1>
 
         @if(auth()->user()->isAdmin())
-            <a href="{{ route('leave_types.create') }}" class="btn btn-primary mb-3">Add New Leave Type</a>
+            <a href="{{ route('admin.leave_types.create') }}" class="btn btn-primary mb-3">Add New Leave Type</a>
         @endif
 
         <table class="table">
