@@ -29,11 +29,11 @@ class UserController extends Controller
                 'surname' => 'required|string|max:255'
             ]);
 
-            if(!Auth::attempt($request->only(['email','username']))){
+            if($validateUser->fails()){
                 return response()->json([
                     'status' => false,
                     'message' => 'Email or username has been taken.',
-                ],401);
+                ], 401);
             }
 
             $user = User::create([
