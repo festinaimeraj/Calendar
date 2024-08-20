@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\RequestLeaveController;
 use App\Http\Controllers\Api\EmployeesController;
 use App\Http\Controllers\Api\ApproveDenyRequestsController;
 use App\Http\Controllers\Api\AdminReportController;
+use App\Http\Controllers\LeaveTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,4 +54,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/report', [AdminReportController::class, 'search']);
 
 
+
+    Route::prefix('leave-types')->group(function () {
+        Route::get('/', [LeaveTypeController::class, 'index']);
+        Route::get('/{id}', [LeaveTypeController::class, 'show']);
+        Route::post('/', [LeaveTypeController::class, 'store']);
+        Route::put('/{id}', [LeaveTypeController::class, 'update']);
+        Route::delete('/{id}', [LeaveTypeController::class, 'destroy']);
+    });
 });
+
+
+
+

@@ -9,6 +9,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\AdminReportController;
+use App\Http\Controllers\LeaveTypeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,6 +41,13 @@ Route::prefix('admin')->middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::get('/approve-deny-requests', [AdminController::class, 'approveDenyRequests'])->name('admin.approve-deny-requests');
     Route::post('/process-leave-request', [AdminController::class, 'processLeaveRequest'])->name('admin.processLeaveRequest');
     Route::get('/view-leave-reports', [AdminController::class, 'viewLeaveReports'])->name('admin.view-leave-reports');
+    Route::prefix('leave-types')->group(function () {
+        Route::get('/', [LeaveTypeController::class, 'index']);
+        Route::get('/{id}', [LeaveTypeController::class, 'show']);
+        Route::post('/', [LeaveTypeController::class, 'store']);
+        Route::put('/{id}', [LeaveTypeController::class, 'update']);
+        Route::delete('/{id}', [LeaveTypeController::class, 'destroy']);
+    });
 });
 // Employee routes
 Route::middleware(['auth', 'can:isEmployee'])->prefix('employee')->name('employee.')->group(function () {

@@ -172,7 +172,7 @@ public function showEmployee()
             ->join('users as u', 'lr.user_id', '=', 'u.id')
             ->select('lr.*', 'u.username')
             ->where('lr.answer', 'pending')
-            ->orderByDesc('lr.requestId')
+            ->orderByDesc('lr.id')
             ->get();
     
         return view('admin.approve-deny-requests', compact('leaveRequests'));
@@ -180,13 +180,15 @@ public function showEmployee()
     
     public function processLeaveRequest(Request $request)
     {
+        // Validate the incoming request
         $request->validate([
-            'request_id' => 'required|integer|exists:leave_requests,requestId',
+            'id' => 'required|integer|exists:leave_requests,requestId',
             'action' => 'required|string|in:approve,deny',
-            'response' => 'required|string|max:255',
+            'response_message' => 'required|string|max:255',
         ]);
     
-        $leaveRequest = LeaveRequest::findOrFail($request->request_id);
+        // Find the leave request and update it
+        $leaveRequest = LeaveRequest::findOrFail($request->id);
         $leaveRequest->answer = $request->action === 'approve' ? 'approved' : 'denied';
         $leaveRequest->response_message = $request->response;
         $leaveRequest->save();
@@ -199,6 +201,7 @@ public function showEmployee()
         $startDate = $leaveRequest->start_date;
         $endDate = $leaveRequest->end_date;
     
+        // Prepare and send the email
         $subject = 'Leave Request ' . ucfirst($leaveRequest->answer);
         $body = view('emails.leave_response', compact('username', 'leaveType', 'startDate', 'endDate', 'leaveRequest'))->render();
     
@@ -207,7 +210,6 @@ public function showEmployee()
         return redirect()->route('admin.approveDenyRequests')->with('success', 'Leave request has been ' . $leaveRequest->answer . '.');
     }
     
-
     public function viewLeaveReports()
     {
         
@@ -218,7 +220,16 @@ public function showEmployee()
             return $leave->user->name.' '.$leave->user->surname; // Group by the user's username
         })
         ->map(function ($leaves, $username) {
-            return $leaves->toArray(); // Convert the collection to an array
+            return $leaves->map(function ($leave) {
+                return [
+                    'leave_type' => $leave->leave_type,
+                    'start_date' => $leave->start_date,
+                    'end_date' => $leave->end_date,
+                    'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1, // Calculate requested days
+                    'answer' => $leave->answer, // Assuming there is a 'status' column
+                    'action' => $leave->action, // Assuming there is an 'action' column
+                ];
+            })->toArray();
         })
         ->toArray();
   

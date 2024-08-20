@@ -37,6 +37,13 @@ class UserController extends Controller
                 ], 401);
             }
 
+            if(!Auth::attempt($request->only(['email','username']))){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email or username has been taken.',
+                ],401);
+            }
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -48,6 +55,7 @@ class UserController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'User Created Successfully',
+                'role' => $user->role,
                 'token' =>$user->createToken("API TOKEN")->plainTextToken
             ],200);
         } catch (\Throwable $th) {
@@ -90,6 +98,7 @@ class UserController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged in Successfully',
+                'role' => $user->role,
                 'token' =>$user->createToken("API TOKEN")->plainTextToken
             ],200);
         } catch (\Throwable $th) {
