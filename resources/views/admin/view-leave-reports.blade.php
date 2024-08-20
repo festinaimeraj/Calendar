@@ -43,11 +43,10 @@
         </thead>
         <tbody>
             @foreach($requestsGrouped as $username => $requests)
+
                 <tr onclick="toggleDetails('{{ $username }}')" class="cursor-pointer">
                     <td>{{ $username }} (click to toggle details)</td>
-                    <td>{{ $requests->where('answer', 'approved')->sum(function ($req) {
-                        return \Carbon\Carbon::parse($req->end_date)->diffInDays(\Carbon\Carbon::parse($req->start_date)) + 1;
-                    }) }}</td>
+                    <td></td>
                 </tr>
                 <tr id="details-{{ $username }}" class="leave-details" style="display: none;">
                     <td colspan="2">
@@ -64,23 +63,7 @@
                             </thead>
                             <tbody>
                                 @foreach($requests as $request)
-                                    <tr>
-                                        <td>{{ $request->leave_type }}</td>
-                                        <td>{{ $request->start_date }}</td>
-                                        <td>{{ $request->end_date }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($request->end_date)->diffInDays(\Carbon\Carbon::parse($request->start_date)) + 1 }}</td>
-                                        <td>{{ $request->answer }}</td>
-                                        <td>
-                                            @if($request->answer === 'pending')
-                                                <form method="POST" action="{{ route('admin.update-leave-request') }}" style="display:inline;">
-                                                    @csrf
-                                                    <input type="hidden" name="requestId" value="{{ $request->requestId }}">
-                                                    <button type="submit" class="btn btn-success btn-sm" name="action" value="approve">Approve</button>
-                                                    <button type="submit" class="btn btn-danger btn-sm" name="action" value="deny">Deny</button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    </tr>
+                                    
                                 @endforeach
                             </tbody>
                         </table>

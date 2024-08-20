@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\EditMyRequestsController;
 use App\Http\Controllers\Api\MyLeaveTotalsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RequestLeaveController;
 use App\Http\Controllers\Api\EmployeesController;
@@ -27,31 +26,36 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/leave-requests', [LeaveRequestController::class, 'index']);
+Route::middleware('auth:sanctum')->group(function () {
 
-Route::post('/auth/register', [UserController::class, 'createUser']);
-Route::post('/auth/login', [UserController::class, 'loginUser']);
+    Route::get('/leave-requests', [RequestLeaveController::class, 'index']);
 
-Route::get('/request-leave', [RequestLeaveController::class, 'index']);
-Route::post('/submit-leave-request', [RequestLeaveController::class, 'store']);
+    Route::post('/auth/register', [UserController::class, 'createUser']);
+    Route::post('/auth/login', [UserController::class, 'loginUser']);
 
-Route::get('/my-leave-totals', [MyLeaveTotalsController::class, 'index']);
-Route::get('/my-leave-totals/{leaveType}', [MyLeaveTotalsController::class, 'showMyLeaveTotals']);
+    Route::get('/request-leave', [RequestLeaveController::class, 'index']);
+    Route::post('/submit-leave-request', [RequestLeaveController::class, 'store']);
 
-Route::get('/edit-leave-request', [EditMyRequestsController::class, 'index']);
-Route::put('/edit-leave-request/{requestId}', [EditMyRequestsController::class, 'update']);
+    Route::get('/my-leave-totals', [MyLeaveTotalsController::class, 'index']);
+    Route::get('/my-leave-totals/{leaveType}', [MyLeaveTotalsController::class, 'showMyLeaveTotals']);
 
-Route::get('/employees', [EmployeesController::class, 'index']);
-Route::post('/employees', [EmployeesController::class, 'store']);
-Route::post('/employees/{id}', [EmployeesController::class, 'updateEmployee']);
-Route::post('/employees/{id}', [EmployeesController::class, 'destroy']);
+    Route::get('/edit-leave-request', [EditMyRequestsController::class, 'index']);
+    Route::put('/edit-leave-request/{requestId}', [EditMyRequestsController::class, 'update']);
 
-// Route::get('/admins', [AdminsController::class, 'index']);
-// Route::post('/admins', [AdminsController::class, 'store']);
+    Route::get('/employees', [EmployeesController::class, 'index']);
+    Route::post('/employees', [EmployeesController::class, 'store']);
+    Route::post('/employees/{id}', [EmployeesController::class, 'updateEmployee']);
+    Route::post('/employees/{id}', [EmployeesController::class, 'destroy']);
 
-Route::get('/leave-requests/pending', [ApproveDenyRequestsController::class, 'index']);
-Route::post('/leave-requests/approve', [ApproveDenyRequestsController::class, 'approve']);
-Route::post('/leave-requests/deny', [ApproveDenyRequestsController::class, 'deny']);
+    // Route::get('/admins', [AdminsController::class, 'index']);
+    // Route::post('/admins', [AdminsController::class, 'store']);
+
+    Route::get('/leave-requests/pending', [ApproveDenyRequestsController::class, 'index']);
+    Route::post('/leave-requests/approve', [ApproveDenyRequestsController::class, 'approve']);
+    Route::post('/leave-requests/deny', [ApproveDenyRequestsController::class, 'deny']);
 
 
-Route::post('/admin/report', [AdminReportController::class, 'search']);
+    Route::post('/admin/report', [AdminReportController::class, 'search']);
+
+
+});

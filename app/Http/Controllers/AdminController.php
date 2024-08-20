@@ -210,9 +210,17 @@ public function showEmployee()
 
     public function viewLeaveReports()
     {
-        $requestsGrouped = LeaveRequest::select('user_id', 'leave_type', DB::raw('count(*) as total_requests'))
-                                        ->groupBy('user_id', 'leave_type')
-                                        ->get();
+        
+
+        $requestsGrouped = LeaveRequest::with('user') // Eager load the related user
+        ->get()
+        ->groupBy(function ($leave) {
+            return $leave->user->name.' '.$leave->user->surname; // Group by the user's username
+        })
+        ->map(function ($leaves, $username) {
+            return $leaves->toArray(); // Convert the collection to an array
+        })
+        ->toArray();
   
         return view('admin.view-leave-reports', compact('requestsGrouped'));
     }
