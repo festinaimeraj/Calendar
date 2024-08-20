@@ -41,7 +41,8 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'username' => $request->username,
-                'surname' => $request->surname
+                'surname' => $request->surname,
+                'role' => 'employee',
             ]);
 
             return response()->json([

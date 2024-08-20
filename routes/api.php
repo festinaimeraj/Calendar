@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/leave-requests/deny', [ApproveDenyRequestsController::class, 'deny']);
 
 
-    Route::post('/admin/report', [AdminReportController::class, 'search']);
+    // Route::post('/admin/report', [AdminReportController::class, 'search']);
 
 
 
@@ -64,6 +64,15 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::post('/admin/report', [AdminReportController::class, 'search']);
+});
 
+Route::middleware(['auth:sanctum', 'role:employee'])->group(function () {
+    // Routes only accessible by employees
+    Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard']);
+    Route::post('/submit-leave-request', [RequestLeaveController::class, 'store']);
+    // Other employee routes...
+});
 
 

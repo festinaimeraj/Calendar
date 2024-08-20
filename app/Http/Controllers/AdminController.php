@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GenericMail;
-
+use App\Models\LeaveType;
 
 class AdminController extends Controller
 {
@@ -163,7 +163,9 @@ public function showEmployee()
 
     public function requestLeave()
     {
-        return view('admin.request_leave');
+        $leaveTypes = LeaveType::all();
+
+        return view('admin.request_leave', compact('leaveTypes'));
     }
 
     public function approveDenyRequests()

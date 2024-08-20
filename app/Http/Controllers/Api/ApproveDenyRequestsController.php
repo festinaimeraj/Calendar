@@ -19,11 +19,12 @@ class ApproveDenyRequestsController extends Controller
     public function approve(Request $request){
         // Validate the incoming request
         $request->validate([
-            'request_id' => 'required',
+            'id' => 'required',
+            'response' => 'required|string'
         ]);
 
         // Find the leave request by ID
-        $leaveRequest = LeaveRequest::find($request->request_id);
+        $leaveRequest = LeaveRequest::find($request->id);
 
         if ($leaveRequest && $leaveRequest->answer === 'pending') {
             // Update the status to 'approved'
@@ -40,7 +41,7 @@ class ApproveDenyRequestsController extends Controller
             ], 404);
         }
     }
-
+//email
     public function deny(Request $request){
         $request->validate([
             'request_id' => 'required',

@@ -25,10 +25,9 @@
                 <div class="form-group mb-3">
                     <label for="leave_type" class="form-label">Leave Type:</label>
                     <select name="leave_type" id="leave_type" class="form-select" required>
-                        <option value="Pushim">Pushim</option>
-                        <option value="Flex">Flex</option>
-                        <option value="Pushim mjeksor">Pushim mjeksor</option>
-                        <option value="Tjeter">Tjeter</option>
+                    @foreach ($leaveTypes as $leaveType)
+                        <option value="{{ $leaveType->id }}">{{ $leaveType->name }}</option>
+                    @endforeach
                     </select>
                 </div>
 

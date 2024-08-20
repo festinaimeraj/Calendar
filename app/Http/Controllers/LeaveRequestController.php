@@ -6,13 +6,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\LeaveRequest;
+use App\Models\LeaveType;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class LeaveRequestController extends Controller
 {
     public function showRequestForm()
     {
-        return view('employee.request_leave');
+        $leaveTypes = LeaveType::all();
+
+        return view('employee.request_leave', compact('leaveTypes'));
     }
 
     public function submitLeaveRequest(Request $request)

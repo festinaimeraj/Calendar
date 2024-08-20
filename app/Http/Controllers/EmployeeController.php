@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Models\LeaveType;
 
 
 class EmployeeController extends Controller
@@ -27,22 +28,21 @@ class EmployeeController extends Controller
 
     public function requestLeave()
     {
-        return view('employee.request_leave');
+        $leaveTypes = LeaveType::all();
+
+        return view('employee.request_leave', compact('leaveTypes'));
     }
 
     public function submitLeaveRequest(Request $request)
     {
         $request->validate([
-            'leave_type' => 'required|string|in:Pushim,Flex,Pushim mjeksor,Tjeter',
+            'leave_type' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
             'reason' => 'required|string|max:500',
         ]);
         
-        $validLeaveTypes = ['Pushim', 'Flex', 'Pushim mjeksor', 'Tjeter'];
-        if (!in_array($request->leave_type, $validLeaveTypes)) {
-            return redirect()->back()->withErrors(['leave_type' => 'Invalid leave type.']);
-        }
+
         $user = Auth::user();
         $startDate = \DateTime::createFromFormat('d-M-Y', $request->start_date);
 $endDate = \DateTime::createFromFormat('d-M-Y', $request->end_date);

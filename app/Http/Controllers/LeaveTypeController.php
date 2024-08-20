@@ -27,8 +27,32 @@ class LeaveTypeController extends Controller
         ]);
 
         LeaveType::create($request->all());
-        return redirect()->route('leave_types.index')->with('success', 'Leave Type created successfully.');
+        return redirect()->route('admin.leave_types.index')->with('success', 'Leave Type created successfully.');
     }
 
-    // Other methods remain unchanged
+   public function edit($id)
+    {
+        $leaveType = LeaveType::findOrFail($id);
+        return view('leave_types.edit', compact('leaveType'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]); 
+
+        $leaveType = LeaveType::findOrFail($id);
+        $leaveType->update($request->all());
+        return redirect()->route('admin.leave_types.index')->with('success', 'Leave Type updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $leaveType = LeaveType::findOrFail($id);
+        $leaveType->delete();
+        return redirect()->route('admin.leave_types.index')->with('success', 'Leave Type deleted successfully.');
+    }
+    
 }

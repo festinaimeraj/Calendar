@@ -29,8 +29,8 @@
                         <td>{{ $leaveType->description }}</td>
                         @if(auth()->user()->isAdmin())
                             <td>
-                                <a href="{{ route('leave_types.edit', $leaveType->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="{{ route('leave_types.destroy', $leaveType->id) }}" method="POST" style="display:inline;">
+                                <a href="{{ route('admin.leave_types.edit', $leaveType->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{{ route('admin.leave_types.destroy', $leaveType->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>

@@ -15,10 +15,8 @@ class CheckRole
      */
     public function handle($request, Closure $next, $role)
 {
-    echo "11";
-    die();
     if (!auth()->check() || auth()->user()->role !== $role) {
-        abort(403, 'Unauthorized');
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
 
     return $next($request);

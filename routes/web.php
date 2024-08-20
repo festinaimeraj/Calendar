@@ -21,7 +21,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Admin routes
 // Admin routes
-Route::prefix('admin')->middleware(['auth', 'can:isAdmin'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/calendar', [AdminController::class, 'calendar'])->name('admin.calendar');
     Route::get('/admin/employees', [AdminController::class, 'showEmployee'])->name('admin.employees');
@@ -44,6 +44,7 @@ Route::prefix('admin')->middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::prefix('leave-types')->group(function () {
         Route::get('/', [LeaveTypeController::class, 'index'])->name('admin.leave_types.index');
         Route::get('/create', [LeaveTypeController::class, 'create'])->name('admin.leave_types.create');
+        Route::get('/edit/{id}', [LeaveTypeController::class, 'edit'])->name('admin.leave_types.edit');
         Route::get('/{id}', [LeaveTypeController::class, 'show'])->name('admin.leave_types.show');
         Route::post('/', [LeaveTypeController::class, 'store'])->name('admin.leave_types.store');
         Route::put('/{id}', [LeaveTypeController::class, 'update'])->name('admin.leave_types.update');
@@ -51,7 +52,7 @@ Route::prefix('admin')->middleware(['auth', 'can:isAdmin'])->group(function () {
     });
 });
 // Employee routes
-Route::middleware(['auth', 'can:isEmployee'])->prefix('employee')->name('employee.')->group(function () {
+Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/', [EmployeeController::class, 'index'])->name('index');
     Route::get('/calendar', [EmployeeController::class, 'calendar'])->name('calendar');
     Route::get('/request-leave', [EmployeeController::class, 'requestLeave'])->name('request_leave');

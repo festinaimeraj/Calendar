@@ -6,7 +6,7 @@
     <div class="container">
         <h1>Add New Leave Type</h1>
 
-        <form action="{{ route('leave_types.store') }}" method="POST">
+        <form action="{{ route('admin.leave_types.store') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label for="name">Name</label>
