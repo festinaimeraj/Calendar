@@ -22,17 +22,12 @@ use App\Http\Controllers\Api\AdminReportController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('/auth/register', [UserController::class, 'createUser']);
+Route::post('/auth/login', [UserController::class, 'loginUser']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
-
-    Route::get('/leave-requests', [RequestLeaveController::class, 'index']);
-
-    Route::post('/auth/register', [UserController::class, 'createUser']);
-    Route::post('/auth/login', [UserController::class, 'loginUser']);
-
+    
     Route::get('/request-leave', [RequestLeaveController::class, 'index']);
     Route::post('/submit-leave-request', [RequestLeaveController::class, 'store']);
 
