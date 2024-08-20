@@ -29,14 +29,6 @@ class UserController extends Controller
                 'surname' => 'required|string|max:255'
             ]);
 
-            if($validateUser->fails()){
-                return response()->json([
-                    'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validateUser->errors()
-                ], 401);
-            }
-
             if(!Auth::attempt($request->only(['email','username']))){
                 return response()->json([
                     'status' => false,
