@@ -172,7 +172,7 @@ public function showEmployee()
     {
         $leaveRequests = DB::table('leave_requests as lr')
             ->join('users as u', 'lr.user_id', '=', 'u.id')
-            ->select('lr.*', 'u.username')
+            ->select('lr.*', 'u.name', 'u.surname')
             ->where('lr.answer', 'pending')
             ->orderByDesc('lr.id')
             ->get();
@@ -214,8 +214,6 @@ public function showEmployee()
     
     public function viewLeaveReports()
     {
-        
-
         $requestsGrouped = LeaveRequest::with('user') // Eager load the related user
         ->get()
         ->groupBy(function ($leave) {
@@ -224,7 +222,7 @@ public function showEmployee()
         ->map(function ($leaves, $username) {
             return $leaves->map(function ($leave) {
                 return [
-                    'leave_type' => $leave->leave_type,
+                    'leave_type' => $leave->type->name,
                     'start_date' => $leave->start_date,
                     'end_date' => $leave->end_date,
                     'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1, // Calculate requested days

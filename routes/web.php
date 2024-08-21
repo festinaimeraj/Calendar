@@ -64,11 +64,11 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
 
 // Calendar routes
 Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
-Route::post('/submit_leave_request', [LeaveRequestController::class, 'store'])->name('submit_leave_request');
+// Route::post('/submit_leave_request', [LeaveRequestController::class, 'store'])->name('submit_leave_request');
 Route::get('/load_events', [CalendarController::class, 'loadEvents'])->name('load_events');
 Route::post('/update_event', [CalendarController::class, 'updateEvent'])->name('update_event');
 Route::post('/delete_event', [CalendarController::class, 'deleteEvent'])->name('delete_event');
-Route::get('/fetch_leave_totals', [LeaveRequestController::class, 'fetchLeaveTotals'])->name('fetch_leave_totals');
+// Route::get('/fetch_leave_totals', [LeaveRequestController::class, 'fetchLeaveTotals'])->name('fetch_leave_totals');
 
 // Common Leave request routes for both admin and employee
 

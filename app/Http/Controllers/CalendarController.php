@@ -53,19 +53,63 @@
 // }
 
 // app/Http/Controllers/CalendarController.php
+// app/Http/Controllers/CalendarController.php
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\LeaveRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CalendarController extends Controller
 {
-    public function showAdminCalendar()
+    public function loadEvents()
     {
-        return view('/admin/calendar'); // Adjust path if necessary
+        // Retrieve approved leave requests from the database
+        $events = LeaveRequest::where('answer', 'approved')
+                            ->get()
+                            ->map(function ($request) {
+                                return [
+                                    'id' => $request->id,
+                                    'title' => $request->leave_type,
+                                    'start' => $request->start_date . 'T00:00:00',
+                                    'end' => $request->end_date . 'T23:59:59',
+                                ];
+                            });
+
+        return response()->json($events);
     }
 
-    public function showEmployeeCalendar()
+    public function updateEvent(Request $request)
     {
-        return view('/employee/calendar'); // Adjust path if necessary
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $event = LeaveRequest::find($request->id);
+        if ($event) {
+            $event->start_date = $request->start;
+            $event->end_date = $request->end;
+            $event->save();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Event not found']);
+    }
+
+    public function deleteEvent(Request $request)
+    {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $event = LeaveRequest::find($request->id);
+        if ($event) {
+            $event->delete();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Event not found']);
     }
 }

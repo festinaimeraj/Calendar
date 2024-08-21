@@ -13,13 +13,13 @@
                     Leave Totals
                 </div>
                 <div class="card-body">
-                    @if(isset($leaveTotals))
+                @if($leaveTotals->isEmpty())
                         <p>You have no approved leave days.</p>
                     @else
                         <ul class="list-group">
                             @foreach ($leaveTotals as $leave)
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ $leave->leave_type }}
+                                    {{ $leave->type->name }}
                                     <span class="badge badge-primary badge-pill">{{ $leave->total_days }} days</span>
                                 </li>
                             @endforeach

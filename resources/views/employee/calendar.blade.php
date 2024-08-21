@@ -12,7 +12,8 @@
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events: '/api/leave-requests', // URL to fetch leave requests
+                events: '/load_events',
+                eventColor: '#378006'  // URL to fetch leave requests
         });
         calendar.render();
     });

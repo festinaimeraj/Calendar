@@ -39,7 +39,7 @@
                                 @foreach($leaveRequests as $request)
                                     <tr>
                                         <td>{{ $request->id }}</td>
-                                        <td>{{ $request->leave_type }}</td>
+                                        <td>{{ $request->leave_type_name }}</td>
                                         <td>{{ $request->start_date }}</td>
                                         <td>{{ $request->end_date }}</td>
                                         <td>{{ $request->answer }}</td>
@@ -66,7 +66,7 @@
                         Edit Leave Request
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('employee.update-my-request') }}" method="POST">
+                        <form action="{{ route('employee.edit-my-requests') }}" method="POST">
                             @csrf
                             <input type="hidden" name="requestId" value="{{ $editRequest->id }}">
                             <div class="form-group">

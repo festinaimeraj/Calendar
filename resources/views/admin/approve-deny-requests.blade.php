@@ -19,7 +19,7 @@
             @foreach ($leaveRequests as $request)
                 <div class="request">
                     <div class="request-info">
-                        <p><strong>Username:</strong> {{ $request->username }}</p>
+                        <p><strong>User:</strong> {{ $request->name . ' '. $request->surname  }}</p>
                         <p><strong>Leave Type:</strong> {{ $request->leave_type }}</p>
                         <p><strong>Start Date:</strong> {{ $request->start_date }}</p>
                         <p><strong>End Date:</strong> {{ $request->end_date }}</p>

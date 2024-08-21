@@ -32,27 +32,32 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/request-leave', [RequestLeaveController::class, 'index']);
     Route::post('/submit-leave-request', [RequestLeaveController::class, 'store']);
 
-    Route::get('/my-leave-totals', [MyLeaveTotalsController::class, 'index']);
-    Route::get('/my-leave-totals/{leaveType}', [MyLeaveTotalsController::class, 'showMyLeaveTotals']);
 
-    Route::get('/edit-leave-request', [EditMyRequestsController::class, 'index']);
-    Route::put('/edit-leave-request/{requestId}', [EditMyRequestsController::class, 'update']);
-
-    Route::get('/employees', [EmployeesController::class, 'index']);
-    Route::post('/employees', [EmployeesController::class, 'store']);
-    Route::post('/employees/{id}', [EmployeesController::class, 'updateEmployee']);
-    Route::post('/employees/{id}', [EmployeesController::class, 'destroy']);
-
-    // Route::get('/admins', [AdminsController::class, 'index']);
-    // Route::post('/admins', [AdminsController::class, 'store']);
-
-    Route::get('/leave-requests/pending', [ApproveDenyRequestsController::class, 'index']);
-    Route::post('/leave-requests/approve', [ApproveDenyRequestsController::class, 'approve']);
-    Route::post('/leave-requests/deny', [ApproveDenyRequestsController::class, 'deny']);
-
-
-    // Route::post('/admin/report', [AdminReportController::class, 'search']);
-
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/employees', [EmployeesController::class, 'index']);
+        Route::post('/employees', [EmployeesController::class, 'store']);
+        Route::post('/employees/{id}', [EmployeesController::class, 'updateEmployee']);
+        Route::post('/employees/{id}', [EmployeesController::class, 'destroy']);
+    
+        Route::get('/admins', [AdminsController::class, 'index']);
+        Route::post('/admins', [AdminsController::class, 'store']);
+    
+        Route::get('/leave-requests/pending', [ApproveDenyRequestsController::class, 'index']);
+        Route::post('/leave-requests/approve', [ApproveDenyRequestsController::class, 'approve']);
+        Route::post('/leave-requests/deny', [ApproveDenyRequestsController::class, 'deny']);
+    
+    
+        Route::post('/admin/report', [AdminReportController::class, 'search']);
+    });
+    
+    Route::middleware('role:employee')->group(function () {
+        // Routes only accessible by employees
+        Route::get('/my-leave-totals', [MyLeaveTotalsController::class, 'index']);
+        Route::get('/my-leave-totals/{leaveType}', [MyLeaveTotalsController::class, 'showMyLeaveTotals']);
+    
+        Route::get('/edit-leave-request', [EditMyRequestsController::class, 'index']);
+        Route::put('/edit-leave-request/{requestId}', [EditMyRequestsController::class, 'update']);
+    });
 
 
     Route::prefix('leave-types')->group(function () {
@@ -64,15 +69,5 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::post('/admin/report', [AdminReportController::class, 'search']);
-});
-
-Route::middleware(['auth:sanctum', 'role:employee'])->group(function () {
-    // Routes only accessible by employees
-    Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard']);
-    Route::post('/submit-leave-request', [RequestLeaveController::class, 'store']);
-    // Other employee routes...
-});
 
 
