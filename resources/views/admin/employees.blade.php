@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('layouts.app')
 
 @section('title', 'Manage Employees')
 

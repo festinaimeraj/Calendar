@@ -114,18 +114,18 @@ class LeaveRequestController extends Controller
         $user = Auth::user();
 
         $leaveRequests = LeaveRequest::where('user_id', $user->id)
-            ->where('status', 'pending')
+            ->where('answer', 'pending')
             ->get();
 
         $editRequest = null;
         if (request()->has('id')) {
             $editRequest = LeaveRequest::where('id', request('id'))
                 ->where('user_id', $user->id)
-                ->where('status', 'pending')
+                ->where('answer', 'pending')
                 ->first();
         }
-
-        return view('employee.edit-my-requests', compact('leaveRequests', 'editRequest'));
+        $leaveTypes = LeaveType::all(); // Fetch leave types for the dropdown
+        return view('employee.edit-my-requests', compact('leaveRequests', 'editRequest', 'leaveTypes'));
     }
 
     public function updateMyRequest(Request $request)
@@ -138,7 +138,7 @@ class LeaveRequestController extends Controller
 
         $leaveRequest = LeaveRequest::where('id', $request->requestId)
             ->where('user_id', Auth::id())
-            ->where('status', 'pending')
+            ->where('answer', 'pending')
             ->firstOrFail();
 
         $leaveRequest->leave_type = $request->leave_type;

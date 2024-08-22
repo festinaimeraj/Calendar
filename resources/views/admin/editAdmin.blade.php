@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Edit Admin')
 
@@ -23,7 +23,7 @@
             <label for="email">Email</label>
             <input type="email" class="form-control" id="email" name="email" value="{{ $admin->email }}" required>
         </div>
-        <button type="submit" class="btn btn-primary">Update Employee</button>
+        <button type="submit" class="btn btn-primary">Update Admin</button>
     </form>
 </div>
 @endsection

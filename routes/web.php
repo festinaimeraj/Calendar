@@ -38,11 +38,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/update-admin/{id}', [AdminController::class, 'updateAdmin'])->name('admin.updateAdmin');
     Route::delete('/delete-admin/{id}', [AdminController::class, 'deleteAdmin'])->name('admin.deleteAdmin');
     Route::get('/request-leave', [AdminController::class, 'requestLeave'])->name('admin.request_leave');
+    Route::post('/request-leave', [AdminController::class, 'submitLeaveRequest'])->name('admin.request_leave.submit');
     Route::get('/approve-deny-requests', [AdminController::class, 'approveDenyRequests'])->name('admin.approve-deny-requests');
     Route::post('/process-leave-request', [AdminController::class, 'processLeaveRequest'])->name('admin.processLeaveRequest');
     Route::get('/view-leave-reports', [AdminController::class, 'viewLeaveReports'])->name('admin.view-leave-reports');
     Route::prefix('leave-types')->group(function () {
-        Route::get('/', [LeaveTypeController::class, 'index'])->name('admin.leave_types.index');
+        Route::get('/leave-types', [LeaveTypeController::class, 'index'])->name('admin.leave_types.index');
         Route::get('/create', [LeaveTypeController::class, 'create'])->name('admin.leave_types.create');
         Route::get('/edit/{id}', [LeaveTypeController::class, 'edit'])->name('admin.leave_types.edit');
         Route::get('/{id}', [LeaveTypeController::class, 'show'])->name('admin.leave_types.show');
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     Route::post('/request-leave', [EmployeeController::class, 'submitLeaveRequest'])->name('request_leave.submit'); // Corrected name
     Route::get('/my-leave-totals', [EmployeeController::class, 'myLeaveTotals'])->name('my-leave-totals');
     Route::get('/edit-my-requests', [EmployeeController::class, 'editMyRequests'])->name('edit-my-requests');
+    Route::post('/update-my-request', [LeaveRequestController::class, 'update'])->name('update-my-request');
     Route::get('/my-leave-totals', [LeaveController::class, 'showLeaveTotals'])->name('my-leave-totals');
 });
 

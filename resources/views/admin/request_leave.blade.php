@@ -6,7 +6,7 @@
 <div class="container d-flex justify-content-center">
     <div class="col-md-6">
         <h2 class="my-4 text-center">Request Leave</h2>
-        <form method="POST" action="{{ route('employee.request_leave.submit') }}" id="leaveForm">
+        <form method="POST" action="{{ route('admin.request_leave') }}" id="leaveForm">
             @csrf
             <div class="form-group">
                 <label for="leave_type">Leave Type:</label>

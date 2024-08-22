@@ -10,6 +10,8 @@ use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GenericMail;
 use App\Models\LeaveType;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -168,11 +170,61 @@ public function showEmployee()
         return view('admin.request_leave', compact('leaveTypes'));
     }
 
+    public function submitLeaveRequest(Request $request)
+    {
+        $request->validate([
+            'leave_type' => 'required',
+            'start_date' => 'required|date_format:d/m/Y',
+        'end_date' => 'required|date_format:d/m/Y',
+            'reason' => 'required|string|max:500',
+        ]);
+        
+
+        $user = Auth::user();
+        $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date);
+    $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
+
+        if ($startDate === false || $endDate === false) {
+            // Handle the error if the date creation failed
+            return response()->json(['error' => 'Invalid date format'], 400);
+        }
+
+        // Format the date to 'Y-m-d' format
+        $startDateFormatted = $startDate->format('Y-m-d');
+        $endDateFormatted = $endDate->format('Y-m-d');
+
+
+        try {
+            $leaveRequest = new LeaveRequest();
+            $leaveRequest->user_id =  Auth::user()->id;
+            $leaveRequest->leave_type = $request->leave_type;
+            $leaveRequest->start_date = $startDate;
+            $leaveRequest->end_date = $endDate;
+            $leaveRequest->reason = $request->reason;
+            $leaveRequest->answer = 'pending';
+            $leaveRequest->save();
+
+            // Set a success message in the session
+            session()->flash('status', 'Your leave request has been submitted successfully and is pending approval.');
+
+            // Redirect based on the role
+            if ($user->role === 'admin') {
+                return redirect()->back();
+            } else {
+                return redirect()->back();
+            } 
+            } catch (\Exception $e) {
+            Log::error('Error saving leave request: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Failed to save leave request.']);
+            }
+}
     public function approveDenyRequests()
     {
+    
         $leaveRequests = DB::table('leave_requests as lr')
             ->join('users as u', 'lr.user_id', '=', 'u.id')
-            ->select('lr.*', 'u.name', 'u.surname')
+            ->join('leave_types as lt', 'lr.leave_type', '=', 'lt.id') // Join with leave_types table
+            ->select('lr.*', 'u.name', 'u.surname', 'lt.name as leave_type_name') // Select leave type name
             ->where('lr.answer', 'pending')
             ->orderByDesc('lr.id')
             ->get();
@@ -212,27 +264,49 @@ public function showEmployee()
         return redirect()->route('admin.approve-deny-requests')->with('success', 'Leave request has been ' . $leaveRequest->answer . '.');
     }
     
-    public function viewLeaveReports()
+    public function viewLeaveReports(Request $request)
     {
-        $requestsGrouped = LeaveRequest::with('user') // Eager load the related user
-        ->get()
-        ->groupBy(function ($leave) {
-            return $leave->user->name.' '.$leave->user->surname; // Group by the user's username
-        })
-        ->map(function ($leaves, $username) {
-            return $leaves->map(function ($leave) {
-                return [
-                    'leave_type' => $leave->type->name,
-                    'start_date' => $leave->start_date,
-                    'end_date' => $leave->end_date,
-                    'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1, // Calculate requested days
-                    'answer' => $leave->answer, // Assuming there is a 'status' column
-                    'action' => $leave->action, // Assuming there is an 'action' column
-                ];
-            })->toArray();
-        })
-        ->toArray();
-  
-        return view('admin.view-leave-reports', compact('requestsGrouped'));
+        // Fetch all leave types
+        $leaveTypes = LeaveType::all();
+
+        // Initialize the query builder for leave requests
+    $query = LeaveRequest::with('user', 'type');
+
+    // Apply the search by username if provided
+    if ($request->filled('user')) {
+        $query->whereHas('user', function($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->input('user') . '%')
+              ->orWhere('surname', 'like', '%' . $request->input('user') . '%');
+        });
     }
+
+    // Apply the search by leave type if provided
+    if ($request->filled('leave_type')) {
+        $query->where('leave_type', $request->input('leave_type'));
+    }
+        
+        // Group leave requests by user's full name and map the necessary details
+        $requestsGrouped = LeaveRequest::with('user', 'type') // Eager load related user and leave type
+            ->get()
+            ->groupBy(function ($leave) {
+                return $leave->user->name . ' ' . $leave->user->surname; // Group by user's full name
+            })
+            ->map(function ($leaves, $username) {
+                return $leaves->map(function ($leave) {
+                    return [
+                        'leave_type' => $leave->type->name,
+                        'start_date' => $leave->start_date,
+                        'end_date' => $leave->end_date,
+                        'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1,
+                        'answer' => $leave->answer,
+                        'action' => $leave->action,
+                    ];
+                })->toArray();
+            })
+            ->toArray();
+      
+        // Pass both $requestsGrouped and $leaveTypes to the view
+        return view('admin.view-leave-reports', compact('requestsGrouped', 'leaveTypes'));
+    }
+    
 }

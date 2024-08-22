@@ -148,8 +148,7 @@ class EmployeeController extends Controller
     {
         
         $userId = Auth::id();
-        echo $userId;
-        exit();
+      
         $leaveTotals = LeaveRequest::where('user_id', $userId)
             ->where('status', 'approved')
             ->selectRaw('leave_type, SUM(DATEDIFF(end_date, start_date) + 1) as total_days')

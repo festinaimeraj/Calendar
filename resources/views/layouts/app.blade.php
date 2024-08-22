@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -39,6 +39,7 @@
                             <li class="nav-item"><a class="nav-link" href="{{ route('admin.request_leave') }}">Request Leave</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('admin.approve-deny-requests') }}">Approve/Deny Requests</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('admin.view-leave-reports') }}">View Leave Reports</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('admin.leave_types.index') }}">Leave Types</a></li>
                         @endcan
                         @can('isEmployee')
                             <li class="nav-item"><a class="nav-link" href="{{ route('employee.calendar') }}">Calendar</a></li>
@@ -76,5 +77,6 @@
         </main>
     </div>
     @vite('resources/js/app.js')
+    
 </body>
 </html>

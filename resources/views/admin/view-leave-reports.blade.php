@@ -1,6 +1,5 @@
-{{-- resources/views/admin/view-leave-reports.blade.php --}}
 
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Leave Reports')
 
@@ -17,11 +16,9 @@
             <div class="form-group col-md-6">
                 <label for="leave_type">Search by Leave Type:</label>
                 <select class="form-control" id="leave_type" name="leave_type">
-                    <option value="">Select leave type</option>
-                    <option value="Pushim" {{ request('leave_type') == 'Pushim' ? 'selected' : '' }}>Pushim</option>
-                    <option value="Flex" {{ request('leave_type') == 'Flex' ? 'selected' : '' }}>Flex</option>
-                    <option value="Pushim mjeksor" {{ request('leave_type') == 'Pushim mjeksor' ? 'selected' : '' }}>Pushim mjeksor</option>
-                    <option value="Tjeter" {{ request('leave_type') == 'Tjeter' ? 'selected' : '' }}>Tjeter</option>
+                @foreach ($leaveTypes as $leaveType)
+                        <option value="{{ $leaveType->id }}">{{ $leaveType->name }}</option>
+                    @endforeach
                 </select>
             </div>
         </div>

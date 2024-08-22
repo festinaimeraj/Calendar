@@ -202,6 +202,7 @@ class AdminReportController extends Controller
     public function viewLeaveReports()
     {
         $requestsGrouped = LeaveRequest::select('leave_type', DB::raw('count(*) as total_requests'))
+        ->join('leave_types as lt', 'leave_requests.leave_type', '=', 'lt.id')
             ->groupBy('leave_type')
             ->get();
 

@@ -1,6 +1,6 @@
 <!-- resources/views/leave_types/index.blade.php -->
 
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
     <div class="container">
