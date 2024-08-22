@@ -71,8 +71,8 @@ class CalendarController extends Controller
                                 return [
                                     'id' => $request->id,
                                     'title' => $request->leave_type,
-                                    'start' => $request->start_date . 'T00:00:00',
-                                    'end' => $request->end_date . 'T23:59:59',
+                                    'start' => $request->start_date,
+                                    'end' => $request->end_date,
                                 ];
                             });
 
