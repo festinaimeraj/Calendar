@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\RequestLeaveController;
 use App\Http\Controllers\Api\EmployeesController;
 use App\Http\Controllers\Api\ApproveDenyRequestsController;
 use App\Http\Controllers\Api\AdminReportController;
-use App\Http\Controllers\LeaveTypeController;
+use App\Http\Controllers\Api\LeaveTypeController;
 
 /*
 |--------------------------------------------------------------------------
