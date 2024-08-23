@@ -60,6 +60,22 @@ class EmployeeController extends Controller
         $startDateFormatted = $startDate->format('Y-m-d');
         $endDateFormatted = $endDate->format('Y-m-d');
 
+        // Check if there's a pending leave request that overlaps with the new request dates
+    $existingRequest = LeaveRequest::where('user_id', $user->id)
+    ->where('answer', 'pending') // Ensure the status is pending
+    ->where(function($query) use ($startDate, $endDate) {
+        $query->whereBetween('start_date', [$startDate, $endDate])
+              ->orWhereBetween('end_date', [$startDate, $endDate])
+              ->orWhere(function($query) use ($startDate, $endDate) {
+                  $query->where('start_date', '<=', $startDate)
+                        ->where('end_date', '>=', $endDate);
+              });
+    })
+    ->first();
+
+if ($existingRequest) {
+    return redirect()->back()->withErrors(['error' => 'You have already submitted a leave request that overlaps with these dates.']);
+}
 
         try {
             $leaveRequest = new LeaveRequest();

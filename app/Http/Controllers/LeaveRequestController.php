@@ -32,6 +32,7 @@ class LeaveRequestController extends Controller
         $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date)->format('Y-m-d');
         $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date)->format('Y-m-d');
 
+
         try {
             $leaveRequest = new LeaveRequest();
             $leaveRequest->user_id = $user->id; // Corrected user ID assignment

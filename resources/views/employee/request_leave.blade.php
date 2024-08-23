@@ -2,11 +2,7 @@
 
 @section('title', 'Request Leave')
 
-@if ($errors->any())
-     @foreach ($errors->all() as $error)
-         <div>{{$error}}</div>
-     @endforeach
- @endif
+
 
 @section('content')
 <div class="container d-flex justify-content-center mt-5">
@@ -19,6 +15,15 @@
                     {{ session('status') }}
                 </div>
             @endif
+            @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
             <form method="POST" action="{{ route('employee.request_leave.submit') }}" id="leaveForm">
                 @csrf
