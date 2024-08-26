@@ -9,16 +9,19 @@ class CalendarController extends Controller
 {
     public function index()
     {
-        $userId = auth()->id();
-        $requests = LeaveRequest::where('user_id', $userId)->where('answer', 'approved')->get();
-        return response()->json($requests->map(function($request) {
-            return [
-                'id' => $request->id,
-                'title' => $request->leave_type_name,
-                'start' => $request->start_date->toIso8601String(),
-                'end' => $request->end_date->toIso8601String(),
-            ];
-        }));
+        // Retrieve approved leave requests from the database
+        $events = LeaveRequest::where('answer', 'approved')
+                            ->get()
+                            ->map(function ($request) {
+                                return [
+                                    'id' => $request->id,
+                                    'title' => $request->leave_type,
+                                    'start' => $request->start_date,
+                                    'end' => $request->end_date,
+                                ];
+                            });
+
+        return response()->json(['success' => true, 'events' => $events]);
     }
 
     public function update(Request $request)
