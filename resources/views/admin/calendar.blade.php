@@ -6,12 +6,10 @@
     <div class="admin-calendar">
         <h1>Admin Calendar</h1>
         <div id="calendar"></div>
+        <link rel='stylesheet' href='node_modules/@fullcalendar/core/main.css' />
+    <link rel='stylesheet' href='node_modules/@fullcalendar/daygrid/main.css' />
+    <link rel='stylesheet' href='node_modules/@fullcalendar/timegrid/main.css' />
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
-       
-
-
-<!-- FullCalendar JS -->
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>

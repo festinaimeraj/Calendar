@@ -57,7 +57,8 @@ class EmployeesController extends Controller
         if($validateUser->fails()){
             return response()->json([
                 'status' => false,
-                'message' => 'Email or username has been taken.',
+                'message' => 'validation error',
+                'errors' => $validateUser->errors()
             ], 401);
         }
 
