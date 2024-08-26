@@ -70,6 +70,7 @@ class EmployeesController extends Controller
         $user->role = 'employee';
         $user->save();
         return response()->json([
+            'status' => true,
             "message" => "Employee created successfully"
         ], 201);
     }
