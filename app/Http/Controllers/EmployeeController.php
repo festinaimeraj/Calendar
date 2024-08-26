@@ -196,16 +196,12 @@ class EmployeeController extends Controller
         // Retrieve the currently authenticated user
         $user = Auth::user();
 
-        DB::enableQueryLog();
-
-    $leaveRequests = LeaveRequest::where('user_id', $user->id)
-                                ->where('answer', 'pending')
-                                ->join('leave_types', 'leave_requests.leave_type', '=', 'leave_types.id')
-                                ->select('leave_requests.*', 'leave_types.name as leave_type_name')
-                                ->get();
-
-    Log::info(DB::getQueryLog());
-
+        // Retrieve leave requests that are pending
+        $leaveRequests = LeaveRequest::where('user_id', $user->id)
+                                    ->where('answer', 'pending')
+                                    ->join('leave_types', 'leave_requests.leave_type', '=', 'leave_types.id')
+                                    ->select('leave_requests.*', 'leave_types.name as leave_type_name')
+                                    ->get();
 
         // Initialize the request to be edited as null
         $editRequest = null;
@@ -214,12 +210,15 @@ class EmployeeController extends Controller
         if (request()->has('id')) {
             // Fetch the specific leave request for editing
             $editRequest = LeaveRequest::where('id', request('id'))
-                                       ->where('user_id', $user->id)
-                                       ->where('answer', 'pending')
-                                       ->first();
+                                    ->where('user_id', $user->id)
+                                    ->where('answer', 'pending')
+                                    ->first();
         }
 
+        // Fetch all leave types
+        $leaveTypes = LeaveType::all();
+
         // Pass data to the view
-        return view('employee.edit-my-requests', compact('leaveRequests', 'editRequest'));
+        return view('employee.edit-my-requests', compact('leaveRequests', 'editRequest', 'leaveTypes'));
     }
 }

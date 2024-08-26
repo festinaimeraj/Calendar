@@ -41,7 +41,7 @@ class ApproveDenyRequestsController extends Controller
             ], 404);
         }
     }
-//email
+
     public function deny(Request $request){
         $request->validate([
             'request_id' => 'required',
