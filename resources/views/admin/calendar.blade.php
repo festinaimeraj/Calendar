@@ -21,6 +21,7 @@
          <script>
        document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
+        var isAdmin = true; // Admin role
         var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         weekends: false,
@@ -33,7 +34,6 @@
         editable: true,
         selectable: true,
         eventDrop: function(info) {
-            if (!isAdmin) return;
 
             var eventData = {
                 id: info.event.id,
@@ -62,8 +62,7 @@
             });
         },
         eventResize: function(info) {
-            if (!isAdmin) return;
-
+            
             var eventData = {
                 id: info.event.id,
                 start: info.event.start.toISOString(),

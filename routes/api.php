@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\AdminsController;
 use App\Http\Controllers\Api\EditMyRequestsController;
 use App\Http\Controllers\Api\MyLeaveTotalsController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RequestLeaveController;
@@ -11,6 +10,7 @@ use App\Http\Controllers\Api\EmployeesController;
 use App\Http\Controllers\Api\ApproveDenyRequestsController;
 use App\Http\Controllers\Api\AdminReportController;
 use App\Http\Controllers\Api\LeaveTypeController;
+use App\Http\Controllers\Api\CalendarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,8 +32,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/request-leave', [RequestLeaveController::class, 'index']);
     Route::post('/submit-leave-request', [RequestLeaveController::class, 'store']);
 
+    Route::get('/calendar/events', [CalendarController::class, 'index']);
 
     Route::middleware('role:admin')->group(function () {
+        Route::post('/calendar/events/update', [CalendarController::class, 'update']);
+        Route::post('/calendar/events/delete', [CalendarController::class, 'delete']);
+
         Route::get('/employees', [EmployeesController::class, 'index']);
         Route::post('/employees', [EmployeesController::class, 'store']);
         Route::post('/employees/{id}', [EmployeesController::class, 'updateEmployee']);

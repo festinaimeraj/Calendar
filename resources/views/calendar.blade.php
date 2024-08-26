@@ -11,8 +11,8 @@
     <script src='node_modules/@fullcalendar/daygrid/main.min.js'></script>
     <script src='node_modules/@fullcalendar/timegrid/main.min.js'></script>
     <script src='node_modules/@fullcalendar/list/main.min.js'></script>
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
-        <script>console.log('Hello, World!');
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+    <script>
        document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {

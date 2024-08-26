@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class EmployeesController extends Controller
 {
@@ -43,21 +44,29 @@ class EmployeesController extends Controller
     }
     
     public function store(Request $request) {
-        $request->validate([
+        $validateUser = Validator::make($request->all(),
+        [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'username' => 'required|string|max:255|unique:users',
-            'surname' => 'required|string|max:255',
-            'password' => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required'
+            'password' => 'required',
+            'password_confirmation' => 'required|same:password',
+            'username' => 'required',
+            'surname' => 'required|string|max:255'
         ]);
+
+        if($validateUser->fails()){
+            return response()->json([
+                'status' => false,
+                'message' => 'Email or username has been taken.',
+            ], 401);
+        }
+
         $user = new User();
         $user->name = $request->input('name');
         $user->surname = $request->input('surname');
         $user->email = $request->input('email');
         $user->username = $request->input('username');
         $user->password = bcrypt($request->input('password'));
-        $user->password_confirmation = $request->input('password_confirmation');
         $user->role = 'employee';
         $user->save();
         return response()->json([

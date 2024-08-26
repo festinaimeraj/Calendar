@@ -7,7 +7,7 @@
         <h1>Employee Calendar</h1>
         <div id="calendar"></div>
         
-        <script src='node_modules/@fullcalendar/core/main.min.js'></script>
+         <script src='node_modules/@fullcalendar/core/main.min.js'></script>
     <script src='node_modules/@fullcalendar/daygrid/main.min.js'></script>
     <script src='node_modules/@fullcalendar/timegrid/main.min.js'></script>
     <script src='node_modules/@fullcalendar/list/main.min.js'></script>

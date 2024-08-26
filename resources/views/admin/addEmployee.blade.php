@@ -3,6 +3,11 @@
 @section('title', 'Add Employee')
 
 @section('content')
+@if ($errors->any())
+     @foreach ($errors->all() as $error)
+         <div>{{$error}}</div>
+     @endforeach
+ @endif
 <div class="container">
     <h1>Add Employee</h1>
     <form method="POST" action="{{ route('admin.storeEmployee') }}">

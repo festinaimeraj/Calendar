@@ -8,7 +8,6 @@ use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaveController;
-use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\LeaveTypeController;
 
 Route::get('/', function () {
