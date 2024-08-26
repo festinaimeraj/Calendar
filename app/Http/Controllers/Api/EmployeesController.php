@@ -49,7 +49,6 @@ class EmployeesController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required',
-            'password_confirmation' => 'required|same:password',
             'username' => 'required',
             'surname' => 'required|string|max:255'
         ]);
