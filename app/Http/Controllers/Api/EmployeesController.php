@@ -47,13 +47,17 @@ class EmployeesController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'username' => 'required|string|max:255|unique:users',
-            'surname' => 'required|string|max:255'
+            'surname' => 'required|string|max:255',
+            'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required'
         ]);
         $user = new User();
         $user->name = $request->input('name');
         $user->surname = $request->input('surname');
         $user->email = $request->input('email');
         $user->username = $request->input('username');
+        $user->password = bcrypt($request->input('password'));
+        $user->password_confirmation = $request->input('password_confirmation');
         $user->role = 'employee';
         $user->save();
         return response()->json([

@@ -25,11 +25,7 @@ class EmployeeController extends Controller
         return view('employee.calendar');
     }
 
-//endpoint for leave type
-//middleware
-//email/
-//editrequeest/
-//calendar
+
     public function requestLeave()
     {
         $leaveTypes = LeaveType::all();
@@ -66,7 +62,7 @@ class EmployeeController extends Controller
 
         $user = Auth::user();
         $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date);
-    $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
+        $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
 
         if ($startDate === false || $endDate === false) {
             // Handle the error if the date creation failed
@@ -78,21 +74,21 @@ class EmployeeController extends Controller
         $endDateFormatted = $endDate->format('Y-m-d');
 
         // Check if there's a pending leave request that overlaps with the new request dates
-    $existingRequest = LeaveRequest::where('user_id', $user->id)
-    ->where('answer', 'pending') // Ensure the status is pending
-    ->where(function($query) use ($startDate, $endDate) {
-        $query->whereBetween('start_date', [$startDate, $endDate])
-              ->orWhereBetween('end_date', [$startDate, $endDate])
-              ->orWhere(function($query) use ($startDate, $endDate) {
-                  $query->where('start_date', '<=', $startDate)
-                        ->where('end_date', '>=', $endDate);
-              });
-    })
-    ->first();
+        $existingRequest = LeaveRequest::where('user_id', $user->id)
+        ->where('answer', 'pending') // Ensure the status is pending
+        ->where(function($query) use ($startDate, $endDate) {
+            $query->whereBetween('start_date', [$startDate, $endDate])
+                ->orWhereBetween('end_date', [$startDate, $endDate])
+                ->orWhere(function($query) use ($startDate, $endDate) {
+                    $query->where('start_date', '<=', $startDate)
+                            ->where('end_date', '>=', $endDate);
+                });
+        })
+        ->first();
 
-if ($existingRequest) {
-    return redirect()->back()->withErrors(['error' => 'You have already submitted a leave request that overlaps with these dates.']);
-}
+    if ($existingRequest) {
+        return redirect()->back()->withErrors(['error' => 'You have already submitted a leave request that overlaps with these dates.']);
+    }
 
         try {
             $leaveRequest = new LeaveRequest();
@@ -202,11 +198,11 @@ if ($existingRequest) {
 
         DB::enableQueryLog();
 
-$leaveRequests = LeaveRequest::where('user_id', $user->id)
-                             ->where('answer', 'pending')
-                             ->join('leave_types', 'leave_requests.leave_type', '=', 'leave_types.id')
-                             ->select('leave_requests.*', 'leave_types.name as leave_type_name')
-                             ->get();
+    $leaveRequests = LeaveRequest::where('user_id', $user->id)
+                                ->where('answer', 'pending')
+                                ->join('leave_types', 'leave_requests.leave_type', '=', 'leave_types.id')
+                                ->select('leave_requests.*', 'leave_types.name as leave_type_name')
+                                ->get();
 
     Log::info(DB::getQueryLog());
 

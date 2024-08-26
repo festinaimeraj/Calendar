@@ -26,25 +26,22 @@ class AdminController extends Controller
     }
 
  
-public function showEmployee()
-{
-    // Fetch the employee details
-    $employees = User::where('role', 'employee')->get();
+    public function showEmployee()
+    {
+        // Fetch the employee details
+        $employees = User::where('role', 'employee')->get();
 
-    // Fetch total days used by the employee
-    $totalDaysUsed = LeaveRequest::where('user_id', 1)
-        ->where('answer', 'approved')
-        ->selectRaw('SUM(DATEDIFF(end_date, start_date) + 1) as total_days_used')
-        ->pluck('total_days_used')
-        ->first();
+        // Fetch total days used by the employee
+        $totalDaysUsed = LeaveRequest::where('user_id', 1)
+            ->where('answer', 'approved')
+            ->selectRaw('SUM(DATEDIFF(end_date, start_date) + 1) as total_days_used')
+            ->pluck('total_days_used')
+            ->first();
 
-    return view('admin.employees', compact('employees', 'totalDaysUsed'));
-}
-
-    
+        return view('admin.employees', compact('employees', 'totalDaysUsed'));
+    }
 
     
-
 
     public function addEmployee()
     {
@@ -100,11 +97,11 @@ public function showEmployee()
     }
 
     public function showAdmin()
-{
-    // Fetch the employee details
-    $admins = User::where('role', 'admin')->get();
-    return view('admin.admins', compact('admins'));
-}
+    {
+        // Fetch the employee details
+        $admins = User::where('role', 'admin')->get();
+        return view('admin.admins', compact('admins'));
+    }
 
     // Method to add an admin
     public function addAdmin()
@@ -182,7 +179,7 @@ public function showEmployee()
 
         $user = Auth::user();
         $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date);
-    $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
+        $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
 
         if ($startDate === false || $endDate === false) {
             // Handle the error if the date creation failed
@@ -217,7 +214,7 @@ public function showEmployee()
             Log::error('Error saving leave request: ' . $e->getMessage());
             return redirect()->back()->withErrors(['error' => 'Failed to save leave request.']);
             }
-}
+    }
     public function approveDenyRequests()
     {
     
