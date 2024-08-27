@@ -177,6 +177,13 @@ class EmployeeController extends Controller
     {
         
         $userId = Auth::id();
+
+        $leaveTypeAllocations =[
+            1 => 18,
+            2 => 15,
+            3 => 12,
+            4 => 10,
+        ];
       
         $leaveTotals = LeaveRequest::where('user_id', $userId)
             ->where('status', 'approved')
@@ -184,11 +191,14 @@ class EmployeeController extends Controller
             ->groupBy('leave_type')
             ->get();
 
-        $totalAllocatedDays = 18;
-        $totalUsedDays = $leaveTotals->sum('total_days');
-        $remainingDays = $totalAllocatedDays - $totalUsedDays;
+        
+        $remainingDaysByType = [];
+        foreach ($leaveTotals as $leave) {
+            $allocatedDays = $leaveTypeAllocations[$leave->leave_types] ?? 0;
+            $remainingDaysByType[$leave->leave_types] = $allocatedDays - $leave->total_days;            
+        }
 
-        return view('employee.my-leave-totals', compact('leaveTotals', 'remainingDays'));
+        return view('employee.my-leave-totals', compact('leaveTotals', 'remainingDaysByType'));
     }
 
     public function editMyRequests()

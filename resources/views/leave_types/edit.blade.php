@@ -1,5 +1,5 @@
 
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Edit Leave Type')
 
@@ -13,6 +13,11 @@
         <div class="form-group">
             <label for="name">Leave Type Name:</label>
             <input type="text" id="name" name="name" class="form-control" value="{{ $leaveType->name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Description:</label>
+            <input type="text" id="name" name="name" class="form-control" value="{{ $leaveType->description }}" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Update Leave Type</button>

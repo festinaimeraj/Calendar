@@ -3,20 +3,27 @@
 @section('title', 'Employee Calendar')
 
 @section('content')
-    <div class="employee-calendar">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/main.min.css">
+
+    <div class="admin-calendar">
         <h1>Employee Calendar</h1>
         <div id="calendar"></div>
         
-         <script src='node_modules/@fullcalendar/core/main.min.js'></script>
+        <script src='node_modules/@fullcalendar/core/main.min.js'></script>
     <script src='node_modules/@fullcalendar/daygrid/main.min.js'></script>
     <script src='node_modules/@fullcalendar/timegrid/main.min.js'></script>
     <script src='node_modules/@fullcalendar/list/main.min.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
-        <script>console.log('Hello, World!');
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+        
+    <script>
        document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
+        var isAdmin = false; 
         var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
+        displayEventTime: false,
         weekends: false,
         headerToolbar: {
             left: 'prev,next today',
@@ -26,8 +33,8 @@
         events: '/load_events',
         editable: true,
         selectable: true,
+        eventResizableFromEnd: true, 
         eventDrop: function(info) {
-            if (!isAdmin) return;
 
             var eventData = {
                 id: info.event.id,
@@ -56,13 +63,14 @@
             });
         },
         eventResize: function(info) {
-            if (!isAdmin) return;
-
+            if(!isAdmin) return;
             var eventData = {
                 id: info.event.id,
                 start: info.event.start.toISOString(),
                 end: info.event.end ? info.event.end.toISOString() : null
             };
+
+          updateEvent(eventData);
 
             fetch('/update_event', {
                 method: 'POST',
@@ -72,14 +80,24 @@
                 },
                 body: JSON.stringify(eventData)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
-                if (!data.success) {
+                if (data.success) {
+                    console.log('Event updated successfully:', data);
+                } else {
                     alert(data.message || 'Failed to update event');
+                    info.revert(); // Revert the event to its original state
                 }
             })
-            .catch(() => {
-                alert('Failed to update event');
+            .catch(error => {
+                console.error('Error updating event:', error);
+                alert('Failed to update event. Please try again.');
+                info.revert(); // Revert the event to its original state
             });
         },
         eventClick: function(info) {
@@ -114,6 +132,6 @@
 
     calendar.render();
 });
-</script>
+        </script>
     </div>
 @endsection

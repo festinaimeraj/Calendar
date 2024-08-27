@@ -3,17 +3,10 @@
 @section('title', 'Manage Employees')
 
 @section('content')
-<?php
-    echo '<button style="padding: 10px 20px;
-        margin: 5px;
-        border: none;
-        border-radius: 5px;
-        background-color: #007bff;
-        color: #fff;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;" onclick="window.location.href=\'' . route('admin.addEmployee') . '\'">Add Employee</button>';
-?>
+
+@if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.addEmployee') }}" class="btn btn-primary">Add Employee</a>
+        @endif
 
 
     <div class="container">
@@ -39,7 +32,7 @@
                         <td>{{ $employee->name }}</td>
                         <td>{{ $employee->surname }}</td>
                         <td>{{ $employee->email }}</td>
-                        <td>{{ $employee->total_days_used }} / 18</td> <!-- Display total days used out of max 18 -->
+                        <td>{{ $employee->total_days_used !== NULL ? $employee->total_days_used . '/18' : '0/18' }}</td>
                         <td>
                             <a href="{{ route('admin.editEmployee', $employee->id) }}" class="button">Edit</a>
                         </td>

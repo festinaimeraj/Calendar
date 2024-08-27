@@ -5,7 +5,10 @@
 @section('content')
     <div class="container">
         <h1>Manage Admins</h1>
-        
+        @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.addAdmin') }}" class="btn btn-primary mb-3">Add Admin</a>
+        @endif
+
         <table class="table">
             <thead>
                 <tr>

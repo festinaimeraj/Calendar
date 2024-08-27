@@ -11,6 +11,9 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" type="text/js" href="{{ asset('js/app.js') }}">
     <link rel="stylesheet" type="text/js" href="{{ asset('js\calendar.js') }}">
+    <link rel='stylesheet' href='node_modules/@fullcalendar/core/main.css' />
+    <link rel='stylesheet' href='node_modules/@fullcalendar/daygrid/main.css' />
+    <link rel='stylesheet' href='node_modules/@fullcalendar/timegrid/main.css' />
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 

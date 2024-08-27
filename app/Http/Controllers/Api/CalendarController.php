@@ -4,20 +4,41 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
+use Carbon\Carbon;
 
 class CalendarController extends Controller
 {
-    public function index()
+    public function loadEvents()
     {
         // Retrieve approved leave requests from the database
         $events = LeaveRequest::where('answer', 'approved')
                             ->get()
                             ->map(function ($request) {
+                                $color = '';
+                                    switch ($request->type->name) {
+                                        case 'Pushim':
+                                            $color = '#f44336'; // Red
+                                            break;
+                                        case 'Flex':
+                                            $color = '#ff9800'; // Orange
+                                            break;
+                                        case 'Pushim mjeksor':
+                                            $color = '#4caf50'; // Blue
+                                            break;
+                                        case 'Tjeter':
+                                            $color = '#4caf50'; // Green
+                                            break;
+                                        default:
+                                            $color = '#795548'; // Brown
+                                            break;
+                                    }
+
                                 return [
                                     'id' => $request->id,
-                                    'title' => $request->leave_type,
+                                    'title' => $request->user->name.' '.$request->user->surname. '-' .$request->type->name,
                                     'start' => $request->start_date,
                                     'end' => $request->end_date,
+                                    'color' => $color,
                                 ];
                             });
 

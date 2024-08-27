@@ -54,7 +54,7 @@
 .requests-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 70px;
 }
 
 /* Each request card */

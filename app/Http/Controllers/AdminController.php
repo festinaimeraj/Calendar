@@ -26,20 +26,21 @@ class AdminController extends Controller
     }
 
  
-    public function showEmployee()
-    {
-        // Fetch the employee details
-        $employees = User::where('role', 'employee')->get();
 
-        // Fetch total days used by the employee
-        $totalDaysUsed = LeaveRequest::where('user_id', 1)
-            ->where('answer', 'approved')
-            ->selectRaw('SUM(DATEDIFF(end_date, start_date) + 1) as total_days_used')
-            ->pluck('total_days_used')
-            ->first();
+    public function showEmployees()
+{
+    // Fetch all employees with their total approved leave days and count of approved requests
+    $employees = User::leftJoin('leave_requests', 'users.id', '=', 'leave_requests.user_id')
+        ->where('users.role', 'employee')
+        ->select('users.id', 'users.username', 'users.name', 'users.surname', 'users.email')
+        ->selectRaw('SUM(CASE WHEN leave_requests.answer = "approved" AND leave_requests.leave_type = 1 THEN DATEDIFF(leave_requests.end_date, leave_requests.start_date) + 1 ELSE 0 END) AS total_days_used')
+        ->groupBy('users.id', 'users.username', 'users.name', 'users.surname', 'users.email')
+        ->get();
 
-        return view('admin.employees', compact('employees', 'totalDaysUsed'));
-    }
+    // Pass data to view
+    return view('admin.employees', compact('employees'));
+}
+
 
     
 
@@ -132,6 +133,7 @@ class AdminController extends Controller
         return redirect()->route('admin.admins')->with('success', 'Admin added successfully.');
     }
 
+    
     // Method to edit an admin
     public function editAdmin($id)
     {

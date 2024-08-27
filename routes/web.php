@@ -24,7 +24,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/calendar', [AdminController::class, 'calendar'])->name('admin.calendar');
     Route::get('/admin/employees', [AdminController::class, 'showEmployee'])->name('admin.employees');
-
+    Route::get('/admin/employees', [AdminController::class, 'showEmployees'])->name('admin.employees');
     Route::get('/add-employee', [AdminController::class, 'addEmployee'])->name('admin.addEmployee');
     Route::post('/store-employee', [AdminController::class, 'storeEmployee'])->name('admin.storeEmployee');
     Route::get('/edit-employee/{id}', [AdminController::class, 'editEmployee'])->name('admin.editEmployee');

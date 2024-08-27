@@ -3,25 +3,27 @@
 @section('title', 'Admin Calendar')
 
 @section('content')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/main.min.css">
+
     <div class="admin-calendar">
         <h1>Admin Calendar</h1>
         <div id="calendar"></div>
-        <link rel='stylesheet' href='node_modules/@fullcalendar/core/main.css' />
-    <link rel='stylesheet' href='node_modules/@fullcalendar/daygrid/main.css' />
-    <link rel='stylesheet' href='node_modules/@fullcalendar/timegrid/main.css' />
+        
+        <script src='node_modules/@fullcalendar/core/main.min.js'></script>
+    <script src='node_modules/@fullcalendar/daygrid/main.min.js'></script>
+    <script src='node_modules/@fullcalendar/timegrid/main.min.js'></script>
+    <script src='node_modules/@fullcalendar/list/main.min.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
         
-         <script>
+    <script>
        document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var isAdmin = true; // Admin role
         var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
+        displayEventTime: false,
         weekends: false,
         headerToolbar: {
             left: 'prev,next today',
@@ -31,6 +33,10 @@
         events: '/load_events',
         editable: true,
         selectable: true,
+        droppable: true,
+        eventResizableFromStart: true, 
+        eventStartEditable: true,
+        eventDurationEditable: true,
         eventDrop: function(info) {
 
             var eventData = {
@@ -60,12 +66,14 @@
             });
         },
         eventResize: function(info) {
-            
+            // if(!isAdmin) return;
             var eventData = {
                 id: info.event.id,
                 start: info.event.start.toISOString(),
                 end: info.event.end ? info.event.end.toISOString() : null
             };
+
+          updateEvent(eventData);
 
             fetch('/update_event', {
                 method: 'POST',
@@ -75,14 +83,24 @@
                 },
                 body: JSON.stringify(eventData)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
-                if (!data.success) {
+                if (data.success) {
+                    console.log('Event updated successfully:', data);
+                } else {
                     alert(data.message || 'Failed to update event');
+                    info.revert(); // Revert the event to its original state
                 }
             })
-            .catch(() => {
-                alert('Failed to update event');
+            .catch(error => {
+                console.error('Error updating event:', error);
+                alert('Failed to update event. Please try again.');
+                info.revert(); // Revert the event to its original state
             });
         },
         eventClick: function(info) {
@@ -119,14 +137,4 @@
 });
         </script>
     </div>
-
-    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
 @endsection

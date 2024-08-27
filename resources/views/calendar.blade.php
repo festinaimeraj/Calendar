@@ -1,4 +1,4 @@
-@extends('layouts.app')
+<!-- @extends('layouts.app')
 
 @section('title', 'Leave Calendar')
 
@@ -121,4 +121,4 @@
 @endsection
 
 <!-- @vite('resources/js/calendar.js') -->
-
+ -->

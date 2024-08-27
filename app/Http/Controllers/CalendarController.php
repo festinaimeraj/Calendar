@@ -1,59 +1,5 @@
 <?php
 
-// namespace App\Http\Controllers;
-
-// use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth;
-// use App\Models\Event;
-
-// class CalendarController extends Controller
-// {
-//     public function index()
-//     {
-//         $calendarType = Auth::user()->role == 'admin' ? 'Admin Calendar' : 'Employee Calendar';
-//         $isAdmin = Auth::user()->role == 'admin';
-
-//         return view('calendar', compact('calendarType', 'isAdmin'));
-//     }
-
-//     public function loadEvents()
-//     {
-//         // Load events from the database
-//         $events = []; // Fetch events from the database and format them as needed
-//         return response()->json($events);
-//     }
-
-//     public function updateEvent(Request $request)
-//     {
-//         // Update event in the database
-//         $event = Event::find($request->id);
-//         if ($event) {
-//             $event->start = $request->start;
-//             $event->end = $request->end;
-//             $event->save();
-
-//             return response()->json(['success' => true]);
-//         }
-
-//         return response()->json(['success' => false, 'message' => 'Event not found']);
-//     }
-
-//     public function deleteEvent(Request $request)
-//     {
-//         // Delete event from the database
-//         $event = Event::find($request->id);
-//         if ($event) {
-//             $event->delete();
-
-//             return response()->json(['success' => true]);
-//         }
-
-//         return response()->json(['success' => false, 'message' => 'Event not found']);
-//     }
-// }
-
-// app/Http/Controllers/CalendarController.php
-// app/Http/Controllers/CalendarController.php
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -68,17 +14,37 @@ class CalendarController extends Controller
         $events = LeaveRequest::where('answer', 'approved')
                             ->get()
                             ->map(function ($request) {
+                                $color = '';
+                                    switch ($request->type->name) {
+                                        case 'Pushim':
+                                            $color = '#f44336'; // Red
+                                            break;
+                                        case 'Flex':
+                                            $color = '#ff9800'; // Orange
+                                            break;
+                                        case 'Pushim mjeksor':
+                                            $color = '#4caf50'; // Green
+                                            break;
+                                        case 'Tjeter':
+                                            $color = '#2196f3'; // Blue
+                                            break;
+                                        default:
+                                            $color = '#795548'; // Brown
+                                            break;
+                                    }
+
                                 return [
                                     'id' => $request->id,
-                                    'title' => $request->leave_type,
+                                    'title' => $request->user->name.' '.$request->user->surname. '-' .$request->type->name,
                                     'start' => $request->start_date,
                                     'end' => $request->end_date,
+                                    'color' => $color,
                                 ];
                             });
 
         return response()->json($events);
     }
-
+    
     public function updateEvent(Request $request)
     {
         if (Auth::user()->role !== 'admin') {

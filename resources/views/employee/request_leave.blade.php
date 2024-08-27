@@ -63,6 +63,12 @@
             dateFormat: 'dd/mm/yy',
             beforeShowDay: $.datepicker.noWeekends
         });
+
+        $('#start_date').on('change', function() {
+            var startDate = $(this).datepicker('getDate');
+            $('#end_date').datepicker('option', 'minDate', startDate);
+            $('#end_date').datepicker('setDate', startDate);
+        });
     });
 </script>
 @endsection
