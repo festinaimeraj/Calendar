@@ -23,7 +23,7 @@ class LeaveTypeController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'max_days' => 'integer|min:0',
+            'max_days' => 'nullable|integer|min:0',
         ]);
 
         $data = $request->all();
@@ -45,7 +45,7 @@ class LeaveTypeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'max_days' => 'integer|min:0',
+            'max_days' => 'nullable|integer|min:0',
         ]); 
 
         $leaveType = LeaveType::findOrFail($id);
