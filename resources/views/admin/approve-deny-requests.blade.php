@@ -50,35 +50,30 @@
 </head>
 <body>
     <style>
-        /* Container for all leave requests */
 .requests-container {
     display: flex;
     flex-wrap: wrap;
     gap: 70px;
 }
 
-/* Each request card */
 .request {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
-    width: 300px; /* Adjust width as needed */
+    width: 300px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
 }
 
-/* Request info section */
 .request-info {
     margin-bottom: 20px;
 }
 
-/* Form buttons container */
 .form-buttons {
     display: flex;
     gap: 10px;
 }
 
-/* Style for approve and deny buttons */
 .button {
     padding: 10px 15px;
     border: none;
@@ -88,14 +83,12 @@
 }
 
 .approve-button {
-    background-color: #28a745; /* Green color for approve */
+    background-color: #28a745; 
 }
 
 .deny-button {
-    background-color: #dc3545; /* Red color for deny */
+    background-color: #dc3545; 
 }
-
-/* Style for textarea */
 textarea {
     width: 100%;
     height: 60px;

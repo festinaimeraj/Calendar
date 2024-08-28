@@ -10,7 +10,6 @@ class CalendarController extends Controller
 {
     public function loadEvents()
     {
-        // Retrieve approved leave requests from the database
         $events = LeaveRequest::where('answer', 'approved')
                             ->get()
                             ->map(function ($request) {

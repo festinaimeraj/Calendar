@@ -1,5 +1,3 @@
-<!-- resources/views/leave_types/create.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')

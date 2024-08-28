@@ -202,103 +202,100 @@ class AdminController extends Controller
             }
     }
     public function approveDenyRequests()
-    {
-    
-        $leaveRequests = DB::table('leave_requests as lr')
-            ->join('users as u', 'lr.user_id', '=', 'u.id')
-            ->join('leave_types as lt', 'lr.leave_type', '=', 'lt.id') // Join with leave_types table
-            ->select('lr.*', 'u.name', 'u.surname', 'lt.name as leave_type_name') // Select leave type name
-            ->where('lr.answer', 'pending')
-            ->orderByDesc('lr.id')
-            ->get();
-    
-        return view('admin.approve-deny-requests', compact('leaveRequests'));
-    }
+        {
+        
+            $leaveRequests = DB::table('leave_requests as lr')
+                ->join('users as u', 'lr.user_id', '=', 'u.id')
+                ->join('leave_types as lt', 'lr.leave_type', '=', 'lt.id') 
+                ->select('lr.*', 'u.name', 'u.surname', 'lt.name as leave_type_name') 
+                ->where('lr.answer', 'pending')
+                ->orderByDesc('lr.id')
+                ->get();
+        
+            return view('admin.approve-deny-requests', compact('leaveRequests'));
+        }
     
     public function processLeaveRequest(Request $request)
-    {
-        $request->validate([
-            'request_id' => 'required',
-            'action' => 'required|string|in:approve,deny',
-            'response' => 'required|string|max:255',
-        ]);
-    
-        $leaveRequest = LeaveRequest::where('id', $request->request_id)->firstOrFail();
-        $leaveRequest->answer = $request->action === 'approve' ? 'approved' : 'denied';
-        $leaveRequest->response_message = $request->response;
-        $leaveRequest->save();
-    
-        $user = $leaveRequest->user;
-        $email = $user->email;
-        $username = $user->username;
-        $leaveType = $leaveRequest->leave_type;
-        $startDate = $leaveRequest->start_date;
-        $endDate = $leaveRequest->end_date;
-    
-        $subject = 'Leave Request ' . ucfirst($leaveRequest->answer);
-        $body = view('emails.leave_response', compact('username', 'leaveType', 'startDate', 'endDate', 'leaveRequest'))->render();
-    
-        Mail::to($email)->send(new \App\Mail\GenericMail($subject, $body));
-    
-        return redirect()->route('admin.approve-deny-requests')->with('success', 'Leave request has been ' . $leaveRequest->answer . '.');
-    }
+        {
+            $request->validate([
+                'request_id' => 'required',
+                'action' => 'required|string|in:approve,deny',
+                'response' => 'required|string|max:255',
+            ]);
+        
+            $leaveRequest = LeaveRequest::where('id', $request->request_id)->firstOrFail();
+            $leaveRequest->answer = $request->action === 'approve' ? 'approved' : 'denied';
+            $leaveRequest->response_message = $request->response;
+            $leaveRequest->save();
+        
+            $user = $leaveRequest->user;
+            $email = $user->email;
+            $username = $user->username;
+            $leaveType = $leaveRequest->leave_type;
+            $startDate = $leaveRequest->start_date;
+            $endDate = $leaveRequest->end_date;
+        
+            $subject = 'Leave Request ' . ucfirst($leaveRequest->answer);
+            $body = view('emails.leave_response', compact('username', 'leaveType', 'startDate', 'endDate', 'leaveRequest'))->render();
+        
+            Mail::to($email)->send(new \App\Mail\GenericMail($subject, $body));
+        
+            return redirect()->route('admin.approve-deny-requests')->with('success', 'Leave request has been ' . $leaveRequest->answer . '.');
+        }
     
     public function viewLeaveReports(Request $request)
-    {
-        $leaveTypes = LeaveType::all();
+        {
+            $leaveTypes = LeaveType::all();
 
-        $query = LeaveRequest::with('user', 'type');
+            $query = LeaveRequest::with('user', 'type');
 
-        if ($request->filled('user')) {
-            $query->whereHas('user', function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->input('user') . '%')
-                ->orWhere('surname', 'like', '%' . $request->input('user') . '%');
-            });
-        }
+            if ($request->filled('user')) {
+                $query->whereHas('user', function($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->input('user') . '%')
+                    ->orWhere('surname', 'like', '%' . $request->input('user') . '%');
+                });
+            }
 
-        if ($request->filled('leave_type')) {
-            $query->where('leave_type', $request->input('leave_type'));
-        }
-        
-        $requestsGrouped = $query->get()
-    ->groupBy(function ($leave) {
-        return $leave->user->name . ' ' . $leave->user->surname;
-    })
-    ->map(function ($leaves) use ($leaveTypes) {
-        // Initialize total days array with all leave types set to 0 using name
-        $totalDays = $leaveTypes->mapWithKeys(function ($type) {
-            return [$type->name => ['approved' => 0]];
-        })->toArray(); 
+            if ($request->filled('leave_type')) {
+                $query->where('leave_type', $request->input('leave_type'));
+            }
+            
+            $requestsGrouped = $query->get()
+        ->groupBy(function ($leave) {
+            return $leave->user->name . ' ' . $leave->user->surname;
+        })
+        ->map(function ($leaves) use ($leaveTypes) {
+            $totalDays = $leaveTypes->mapWithKeys(function ($type) {
+                return [$type->name => ['approved' => 0]];
+            })->toArray(); 
 
-        // Calculate total days per leave type based on status
-        foreach ($leaves as $leave) {
-            $days = $leave->start_date->diffInDays($leave->end_date) + 1;
-            $leaveTypeName = $leave->type->name; // Corrected key for leave type
+            foreach ($leaves as $leave) {
+                $days = $leave->start_date->diffInDays($leave->end_date) + 1;
+                $leaveTypeName = $leave->type->name; 
 
-            if ($leave->answer === 'approved') {
-                // Check if leave type exists in totalDays
-                if (array_key_exists($leaveTypeName, $totalDays)) {
-                    $totalDays[$leaveTypeName]['approved'] += $days;
+                if ($leave->answer === 'approved') {
+                    if (array_key_exists($leaveTypeName, $totalDays)) {
+                        $totalDays[$leaveTypeName]['approved'] += $days;
+                    }
                 }
             }
+
+            return [
+                'requests' => $leaves->map(function ($leave) {
+                    return [
+                        'leave_type' => $leave->type->name,
+                        'start_date' => $leave->start_date,
+                        'end_date' => $leave->end_date,
+                        'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1,
+                        'answer' => $leave->answer,
+                    ];
+                })->toArray(),
+                'total_days' => $totalDays, 
+            ];
+        })
+        ->toArray();
+
+
+            return view('admin.view-leave-reports', compact('requestsGrouped', 'leaveTypes'));
         }
-
-        return [
-            'requests' => $leaves->map(function ($leave) {
-                return [
-                    'leave_type' => $leave->type->name,
-                    'start_date' => $leave->start_date,
-                    'end_date' => $leave->end_date,
-                    'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1,
-                    'answer' => $leave->answer,
-                ];
-            })->toArray(),
-            'total_days' => $totalDays, // Return the modified array
-        ];
-    })
-    ->toArray();
-
-
-        return view('admin.view-leave-reports', compact('requestsGrouped', 'leaveTypes'));
-    }
 }

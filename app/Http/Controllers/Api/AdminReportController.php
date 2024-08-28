@@ -26,7 +26,7 @@ class AdminReportController extends Controller
             ->where('answer', '!=', 'pending') 
             ->selectRaw('SUM(DATEDIFF(end_date, start_date) + 1) as aggregate')
             ->value('aggregate');
-            // Get leave requests for the user and filter by leave type if provided
+            
             $leaveRequests = LeaveRequest::where('user_id', $user->id)
                 ->when($leaveType, function ($query) use ($leaveType) {
                     return $query->where('leave_type', $leaveType);
@@ -49,10 +49,10 @@ class AdminReportController extends Controller
 
     public function showReport() {
         
-        $requestsGrouped = LeaveRequest::with('user') // Eager load the related user
+        $requestsGrouped = LeaveRequest::with('user') 
         ->get()
         ->groupBy(function ($leave) {
-            return $leave->user->username; // Group by the user's username
+            return $leave->user->username; 
         })
         ->map(function ($leaves, $username) {
             return $leaves->map(function ($leave) {
@@ -60,9 +60,9 @@ class AdminReportController extends Controller
                     'leave_type' => $leave->leave_type,
                     'start_date' => $leave->start_date,
                     'end_date' => $leave->end_date,
-                    'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1, // Calculate requested days
-                    'answer' => $leave->answer, // Assuming there is a 'status' column
-                    'action' => $leave->action, // Assuming there is an 'action' column
+                    'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1, 
+                    'answer' => $leave->answer, 
+                    'action' => $leave->action, 
                 ];
             })->toArray();
         })

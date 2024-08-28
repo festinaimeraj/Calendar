@@ -65,17 +65,14 @@ class EmployeeController extends Controller
         $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
 
         if ($startDate === false || $endDate === false) {
-            // Handle the error if the date creation failed
             return response()->json(['error' => 'Invalid date format'], 400);
         }
 
-        // Format the date to 'Y-m-d' format
         $startDateFormatted = $startDate->format('Y-m-d');
         $endDateFormatted = $endDate->format('Y-m-d');
 
-        // Check if there's a pending leave request that overlaps with the new request dates
         $existingRequest = LeaveRequest::where('user_id', $user->id)
-        ->where('answer', 'pending') // Ensure the status is pending
+        ->where('answer', 'pending') 
         ->where(function($query) use ($startDate, $endDate) {
             $query->whereBetween('start_date', [$startDate, $endDate])
                 ->orWhereBetween('end_date', [$startDate, $endDate])
@@ -100,7 +97,7 @@ class EmployeeController extends Controller
             $leaveRequest->answer = 'pending';
             $leaveRequest->save();
 
-            $adminEmail = 'festinaimeraj1@gmail.com'; // Replace with actual admin email
+            $adminEmail = 'festinaimeraj1@gmail.com'; 
             $subject = 'New Leave Request';
             $body = "
             <html>
@@ -156,10 +153,8 @@ class EmployeeController extends Controller
                         ->html($body);
             });
 
-            // Set a success message in the session
             session()->flash('status', 'Your leave request has been submitted successfully and is pending approval.');
 
-            // Redirect based on the role
             if ($user->role === 'admin') {
                 return redirect()->back();
             } else {
@@ -175,15 +170,9 @@ class EmployeeController extends Controller
 
     public function myLeaveTotals()
     {
-        
         $userId = Auth::id();
 
-        $leaveTypeAllocations =[
-            1 => 18,
-            2 => 15,
-            3 => 12,
-            4 => 10,
-        ];
+        $leaveTypeAllocations = LeaveType::pluck('max_days', 'id');
       
         $leaveTotals = LeaveRequest::where('user_id', $userId)
             ->where('status', 'approved')
@@ -194,41 +183,35 @@ class EmployeeController extends Controller
         
         $remainingDaysByType = [];
         foreach ($leaveTotals as $leave) {
-            $allocatedDays = $leaveTypeAllocations[$leave->leave_types] ?? 0;
+            $allocatedDays = $leaveTypeAllocations[$leave->leave_types] ;
             $remainingDaysByType[$leave->leave_types] = $allocatedDays - $leave->total_days;            
         }
 
+        
         return view('employee.my-leave-totals', compact('leaveTotals', 'remainingDaysByType'));
     }
 
     public function editMyRequests()
     {
-        // Retrieve the currently authenticated user
         $user = Auth::user();
 
-        // Retrieve leave requests that are pending
         $leaveRequests = LeaveRequest::where('user_id', $user->id)
                                     ->where('answer', 'pending')
                                     ->join('leave_types', 'leave_requests.leave_type', '=', 'leave_types.id')
                                     ->select('leave_requests.*', 'leave_types.name as leave_type_name')
                                     ->get();
 
-        // Initialize the request to be edited as null
         $editRequest = null;
 
-        // Check if an 'id' is present in the request
         if (request()->has('id')) {
-            // Fetch the specific leave request for editing
             $editRequest = LeaveRequest::where('id', request('id'))
                                     ->where('user_id', $user->id)
                                     ->where('answer', 'pending')
                                     ->first();
         }
 
-        // Fetch all leave types
         $leaveTypes = LeaveType::all();
 
-        // Pass data to the view
         return view('employee.edit-my-requests', compact('leaveRequests', 'editRequest', 'leaveTypes'));
     }
 }

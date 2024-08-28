@@ -7,7 +7,6 @@
 <div class="container">
     <h2 class="my-4 text-center">Pending Leave Requests</h2>
     
-    <!-- Display flash message -->
     @if(session('status'))
         <div class="alert alert-success">
             {{ session('status') }}
@@ -95,5 +94,15 @@
         </div>
     </div>
 @endif  
+<script>
+    $(document).ready(function() {
+
+        $('#start_date').on('change', function() {
+            var startDate = $(this).datepicker('getDate');
+            $('#end_date').datepicker('option', 'minDate', startDate);
+            $('#end_date').datepicker('setDate', startDate);
+        });
+    });
+</script>
 
 @endsection

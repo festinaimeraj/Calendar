@@ -55,7 +55,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
     Route::middleware('role:employee')->group(function () {
-        // Routes only accessible by employees
         Route::get('/my-leave-totals', [MyLeaveTotalsController::class, 'index']);
         Route::get('/my-leave-totals/{leaveType}', [MyLeaveTotalsController::class, 'showMyLeaveTotals']);
     
@@ -75,6 +74,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-//ndreq leave type on email 
-//edit my requests
-//
+

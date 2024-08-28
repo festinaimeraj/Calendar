@@ -51,7 +51,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::delete('/{id}', [LeaveTypeController::class, 'destroy'])->name('admin.leave_types.destroy');
     });
 });
-// Employee routes
+
 Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/', [EmployeeController::class, 'index'])->name('index');
     Route::get('/calendar', [EmployeeController::class, 'calendar'])->name('calendar');
@@ -71,5 +71,4 @@ Route::post('/update_event', [CalendarController::class, 'updateEvent'])->name('
 Route::post('/delete_event', [CalendarController::class, 'deleteEvent'])->name('delete_event');
 // Route::get('/fetch_leave_totals', [LeaveRequestController::class, 'fetchLeaveTotals'])->name('fetch_leave_totals');
 
-// Common Leave request routes for both admin and employee
 
