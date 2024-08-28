@@ -19,6 +19,7 @@ class AdminsController extends Controller
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required',
         ]);
 
         $user = User::create([
@@ -26,6 +27,7 @@ class AdminsController extends Controller
             'name' => $request->name,
             'surname' => $request->surname,
             'email' => $request->email,
+            'password' => bcrypt($request->password),
             'role' => 'admin',
         ]);
 
