@@ -19,10 +19,13 @@ class MyLeaveTotalsController extends Controller
         if(!empty($request)){
             return response()->json([
                 "total_requests" => $request->count(),
-                "requests" => $request
+                "requests" => $request,
+                'status' => true,
+                'message' => 'Leave requests retrieved successfully.'
             ]);
         } else {
             return response()->json([
+                'status' => false,
                 "message" => "Leave requests not found for the specified type."
             ], 404);
         }

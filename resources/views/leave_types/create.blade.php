@@ -13,8 +13,8 @@
                 <input type="text" class="form-control" id="name" name="name" required>
             </div>
             <div class="form-group">
-                <label for="description">Description</label>
-                <textarea class="form-control" id="description" name="description"></textarea>
+                <label for="max_days">Maximum Days:</label>
+                <input type="number" class="form-control" name="max_days" min="0" required>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>

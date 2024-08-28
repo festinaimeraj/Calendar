@@ -34,10 +34,12 @@ class EmployeesController extends Controller
             $user->email = $request->input('email');
             $user->save();
             return response()->json([
+                'status' => true,
                 "message" => "Employee updated successfully"
             ]);
         } else {
             return response()->json([
+                'status' => false,
                 "message" => "Employee not found."
             ], 404);
         }
@@ -80,10 +82,12 @@ class EmployeesController extends Controller
         if ($user){
             $user->delete();
             return response()->json([
+                'status' => true,
                 "message" => "Employee deleted successfully"
             ]);
         } else {
             return response()->json([
+                'status' => false,
                 "message" => "Employee not found."
             ], 404);
         }

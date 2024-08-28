@@ -8,35 +8,35 @@ use App\Models\LeaveRequest;
 
 class ApproveDenyRequestsController extends Controller
 {
-    // Show all pending leave requests
     public function index(){
-        // Retrieve all leave requests with a status of 'pending'
         $requests = LeaveRequest::where('answer', 'pending')->get();
         return response()->json($requests);
     }
 
-    // Approve a leave request
+    
     public function approve(Request $request){
-        // Validate the incoming request
+        
         $request->validate([
             'id' => 'required',
             'response' => 'required|string'
         ]);
 
-        // Find the leave request by ID
+        
         $leaveRequest = LeaveRequest::find($request->id);
 
         if ($leaveRequest && $leaveRequest->answer === 'pending') {
-            // Update the status to 'approved'
+            
             $leaveRequest->answer = 'approved';
             $leaveRequest->save();
 
             return response()->json([
+                'status' => 200,
                 "message" => "Leave request approved successfully",
                 "request" => $leaveRequest
             ]);
         } else {
             return response()->json([
+                'status' => 404,
                 "message" => "Leave request not found or not pending."
             ], 404);
         }
@@ -48,21 +48,23 @@ class ApproveDenyRequestsController extends Controller
             'reason' => 'required|string'
         ]);
 
-        // Find the leave request by ID
+        
         $leaveRequest = LeaveRequest::find($request->request_id);
 
         if ($leaveRequest && $leaveRequest->answer === 'pending') {
-            // Update the status to 'denied' and save the reason
+            
             $leaveRequest->answer = 'denied';
-            $leaveRequest->denial_reason = $request->input('reason'); // Make sure 'denial_reason' column exists
+            $leaveRequest->denial_reason = $request->input('reason'); 
             $leaveRequest->save();
 
             return response()->json([
+                'status' => 200,
                 "message" => "Leave request denied successfully",
                 "request" => $leaveRequest
             ]);
         } else {
             return response()->json([
+                'status' => 404,
                 "message" => "Leave request not found or not pending."
             ], 404);
         }

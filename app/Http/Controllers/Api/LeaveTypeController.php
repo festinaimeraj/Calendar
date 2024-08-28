@@ -19,7 +19,10 @@ class LeaveTypeController extends Controller
         $leaveType = LeaveType::findOrFail($id);
 
         if(!$leaveType) {
-            return response()->json(['message' => 'Leave type not found'], 404);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Leave type not found',
+            ], 404);
         }
         return response()->json($leaveType);
     }
@@ -28,14 +31,18 @@ class LeaveTypeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'max_days' => 'required|integer|min:0',
         ]);
 
         $leaveType = LeaveType::create([
             'name' => $request->name,
-            'description' => $request->description,
+            'max_days' => 'required|integer|min:0',
         ]);
-        return response()->json($leaveType, 201);
+        return response()->json([
+            'leave_type' => $leaveType,
+            'status' => 'success',
+            'message' => 'Leave type created successfully',
+        ], 201);
     }
 
     public function update(Request $request, $id)
@@ -43,20 +50,26 @@ class LeaveTypeController extends Controller
         $leaveType = LeaveType::find($id);
 
         if(!$leaveType) {
-            return response()->json(['message' => 'Leave type not found'], 404);
+            return response()->json([
+            'success' => false,
+            'message' => 'Leave type not found'], 404);
         }
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'max_days' => 'required|integer|min:0',
         ]);
 
         $leaveType->update([
             'name' => $request->name,
-            'description' => $request->description,
+            'max_days' => 'required|integer|min:0',
         ]);
 
-        return response()->json($leaveType);
+        return response()->json([
+            'leave_type' => $leaveType,
+            'success' => true,
+            'message' => 'Leave type updated successfully',
+        ]);
     }
 
     public function destroy($id)
@@ -64,11 +77,15 @@ class LeaveTypeController extends Controller
        $leaveType = LeaveType::find($id);
 
        if(!$leaveType) {
-           return response()->json(['message' => 'Leave type not found'], 404);
+           return response()->json([
+            'success' => false,
+            'message' => 'Leave type not found'], 404);
        }
 
        $leaveType->delete();
 
-       return response()->json(['message' => 'Leave type deleted successfully']);
+       return response()->json([
+        'success' => true,
+        'message' => 'Leave type deleted successfully']);
     }
 }

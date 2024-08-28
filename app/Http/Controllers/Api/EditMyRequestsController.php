@@ -9,9 +9,9 @@ use App\Models\LeaveRequest;
 
 class EditMyRequestsController extends Controller
 {
-    // Retrieve all pending leave requests for the logged-in user
+    
     public function index() {
-        $userId = Auth::id(); // Get the currently authenticated user ID
+        $userId = Auth::id(); 
         $requests = LeaveRequest::where('user_id', $userId)
                                 ->where('answer', 'pending')
                                 ->get();
@@ -19,31 +19,35 @@ class EditMyRequestsController extends Controller
         return response()->json($requests);
     }
 
-    // Retrieve a specific pending leave request for the logged-in user
+    
     public function show($requestId) {
-        $userId = Auth::id(); // Get the currently authenticated user ID
+        $userId = Auth::id(); 
         $request = LeaveRequest::where('id', $requestId)
                                ->where('user_id', $userId)
                                ->where('answer', 'pending')
                                ->first();
 
         if ($request) {
-            return response()->json($request);
+            return response()->json([
+                "request" => $request,
+                "status" => "success",
+                'message' => 'Leave request retrieved successfully.',
+            ]);
         } else {
             return response()->json([
+                'status' => 'error',
                 "message" => "Leave request not found or not pending."
             ], 404);
         }
     }
 
-    // Update a specific leave request
     public function update(Request $request, $requestId) {
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        $userId = Auth::id(); // Get the currently authenticated user ID
+        $userId = Auth::id(); 
 
         $leaveRequest = LeaveRequest::where('id', $requestId)
                                     ->where('user_id', $userId)
@@ -56,10 +60,12 @@ class EditMyRequestsController extends Controller
             $leaveRequest->save();
 
             return response()->json([
+                'status' => 'success',
                 "message" => "Leave request updated successfully."
             ]);
         } else {
             return response()->json([
+                'status' => 'error',
                 "message" => "Leave request not found or not pending."
             ], 404);
         }

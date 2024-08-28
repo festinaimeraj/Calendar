@@ -1,5 +1,3 @@
-<!-- resources/views/leave_types/index.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
@@ -15,7 +13,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Description</th>
+                    <th>Maximum Days</th>
                     @if(auth()->user()->isAdmin())
                         <th>Actions</th>
                     @endif
@@ -26,7 +24,7 @@
                     <tr>
                         <td>{{ $leaveType->id }}</td>
                         <td>{{ $leaveType->name }}</td>
-                        <td>{{ $leaveType->description }}</td>
+                        <td>{{ $leaveType->max_days }}</td>
                         @if(auth()->user()->isAdmin())
                             <td>
                                 <a href="{{ route('admin.leave_types.edit', $leaveType->id) }}" class="btn btn-warning btn-sm">Edit</a>

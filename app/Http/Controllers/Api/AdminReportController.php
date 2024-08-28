@@ -40,7 +40,11 @@ class AdminReportController extends Controller
             ];
         }
 
-        return response()->json($result);
+        return response()->json([
+            'users' => $results,
+            'success' => true,
+            'message' => 'Report generated successfully',
+        ]);
     }
 
     public function showReport() {
@@ -63,6 +67,10 @@ class AdminReportController extends Controller
             })->toArray();
         })
         ->toArray();
-        return response()->json($requestsGrouped);
+        return response()->json([
+            'requests_grouped' => $requestsGrouped,
+            'success' => true,
+            'message' => 'Report generated successfully',
+        ]);
     }   
 }

@@ -20,17 +20,21 @@ class RequestLeaveController extends Controller{
 public function store(Request $request)
 {
     $validator = Validator::make($request->all(), [
-        'leave_type' => 'required|string',   // Ensure leave_type is required
+        'leave_type' => 'required|string',   
         'start_date' => 'required|date',
         'end_date' => 'required|date',
         'reason' => 'nullable|string'
     ]);
 
     if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
+        return response()->json([
+            'status' => false,
+            'errors' => $validator->errors(),
+            'message' => 'Validation failed'
+        ], 422);
     }
 
-    // Proceed with saving the leave request
+   
     $leaveRequest = new LeaveRequest();
 
     $leaveRequest->user_id = Auth::user()->id;
@@ -40,7 +44,10 @@ public function store(Request $request)
     $leaveRequest->reason = $request->reason;
     $leaveRequest->save();
 
-    return response()->json(['message' => 'Leave request created successfully.'], 201);
+    return response()->json([
+        'status' => true,
+        'message' => 'Leave request created successfully.',
+    ], 201);
 }
 
 
@@ -50,6 +57,7 @@ public function store(Request $request)
             'email' => 'required|email',
         ]);
         return response()->json([
+            'status' => true,
             'message' => 'Email sent successfully',
         ]);
     }

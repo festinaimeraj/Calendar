@@ -11,6 +11,6 @@ class LeaveType extends Model
 
     protected $fillable = [
         'name',
-        'description',
+        'max_days',
     ];
 }
