@@ -36,7 +36,7 @@ class LeaveTypeController extends Controller
 
         $leaveType = LeaveType::create([
             'name' => $request->name,
-            'max_days' => 'nullable|integer|min:0',
+            'max_days' => isset($validated['max_days']) ? $validated['max_days'] : null, // Use null if not provi
         ]);
         return response()->json([
             'leave_type' => $leaveType,
@@ -62,7 +62,7 @@ class LeaveTypeController extends Controller
 
         $leaveType->update([
             'name' => $request->name,
-            'max_days' => 'nullable|integer|min:0',
+            'max_days' => isset($validated['max_days']) ? $validated['max_days'] : $leaveType->max_days, // Preserve existing value if not provided
         ]);
 
         return response()->json([
