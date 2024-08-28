@@ -32,6 +32,7 @@ class AdminsController extends Controller
         ]);
 
         return response()->json([
+            'status' => true,
             "message" => "Admin created successfully"
         ], 201);
     }
