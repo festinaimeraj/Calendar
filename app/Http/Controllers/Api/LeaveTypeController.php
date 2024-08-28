@@ -31,12 +31,12 @@ class LeaveTypeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'max_days' => 'required|integer|min:0',
+            'max_days' => 'integer|min:0',
         ]);
 
         $leaveType = LeaveType::create([
             'name' => $request->name,
-            'max_days' => 'required|integer|min:0',
+            'max_days' => 'integer|min:0',
         ]);
         return response()->json([
             'leave_type' => $leaveType,
@@ -57,12 +57,12 @@ class LeaveTypeController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'max_days' => 'required|integer|min:0',
+            'max_days' => 'integer|min:0',
         ]);
 
         $leaveType->update([
             'name' => $request->name,
-            'max_days' => 'required|integer|min:0',
+            'max_days' => 'integer|min:0',
         ]);
 
         return response()->json([

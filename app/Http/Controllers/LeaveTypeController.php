@@ -23,10 +23,15 @@ class LeaveTypeController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'max_days' => 'required|integer|min:0',
+            'max_days' => 'integer|min:0',
         ]);
 
-        LeaveType::create($request->all());
+        $data = $request->all();
+
+        if($request->name === 'Flex') {
+            $data['max_days'] = null;
+        }
+        LeaveType::create($data);
         return redirect()->route('admin.leave_types.index')->with('success', 'Leave Type created successfully.');
     }
 
@@ -40,11 +45,15 @@ class LeaveTypeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'max_days' => 'required|integer|min:0',
+            'max_days' => 'integer|min:0',
         ]); 
 
         $leaveType = LeaveType::findOrFail($id);
-        $leaveType->update($request->all());
+        $data = $request->all();
+        if($request->name === 'Flex') {
+            $data['max_days'] = null;
+        }
+        $leaveType->update($data);
         return redirect()->route('admin.leave_types.index')->with('success', 'Leave Type updated successfully.');
     }
 
