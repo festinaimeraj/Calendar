@@ -13,7 +13,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Maximum Days</th>
+                    <th>Maximum days</th>
                     @if(auth()->user()->isAdmin())
                         <th>Actions</th>
                     @endif
@@ -24,7 +24,14 @@
                     <tr>
                         <td>{{ $leaveType->id }}</td>
                         <td>{{ $leaveType->name }}</td>
-                        <td>{{ $leaveType->max_days }}</td>
+                        <td>
+                            {{ $leaveType->description }}
+                            @if(is_null($leaveType->max_days) || $leaveType->max_days == -1)
+                                (Unlimited days)
+                            @else
+                                 {{ $leaveType->max_days }}
+                            @endif
+                        </td>
                         @if(auth()->user()->isAdmin())
                             <td>
                                 <a href="{{ route('admin.leave_types.edit', $leaveType->id) }}" class="btn btn-warning btn-sm">Edit</a>

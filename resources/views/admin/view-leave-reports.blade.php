@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('title', 'Leave Reports')
@@ -15,7 +14,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="leave_type">Search by Leave Type:</label>
-                <select class="form-control" id="leave_type" name="leave_type">
+                <select class="form-control" id="leave_type" name="leave_type" placeholder="Enter leave type">
                 @foreach ($leaveTypes as $leaveType)
                         <option value="{{ $leaveType->id }}">{{ $leaveType->name }}</option>
                     @endforeach
@@ -32,50 +31,55 @@
     @endif
 
     <table class="table table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>Username</th>
-                <th>Total Days Used</th>
+    <thead class="thead-dark">
+        <tr>
+            <th>Username</th>
+            <th>Total Days Used</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($requestsGrouped as $username => $groupData)
+            <tr onclick="toggleDetails('{{ $username }}')" class="cursor-pointer">
+                <td>{{ $username }} (click to toggle details)</td>
+                <td>
+                    @foreach($groupData['total_days'] as $leaveType => $days)
+                        <strong>{{ $leaveType }}:</strong> 
+                         {{ $days['approved'] }} days
+                        
+                        <br>
+                    @endforeach
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach($requestsGrouped as $username => $requests)
+            <tr id="details-{{ $username }}" class="leave-details" style="display: none;">
+                <td colspan="2">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Leave Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Requested Days</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($groupData['requests'] as $request)
+                            <tr>
+                                <td>{{ $request['leave_type'] }}</td>
+                                <td>{{ $request['start_date'] }}</td>
+                                <td>{{ $request['end_date'] }}</td>
+                                <td>{{ $request['requested_days'] }}</td>
+                                <td>{{ $request['answer'] }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
 
-                <tr onclick="toggleDetails('{{ $username }}')" class="cursor-pointer">
-                    <td>{{ $username }} (click to toggle details)</td>
-                    <td></td>
-                </tr>
-                <tr id="details-{{ $username }}" class="leave-details" style="display: none;">
-                    <td colspan="2">
-                        <table class="table table-sm table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Leave Type</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                    <th>Requested Days</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($requests as $request)
-                                <tr>
-                                    <td>{{ $request['leave_type'] }}</td>
-                                    <td>{{ $request['start_date'] }}</td>
-                                    <td>{{ $request['end_date'] }}</td>
-                                    <td>{{ $request['requested_days'] }}</td>
-                                    <td>{{ $request['answer'] }}</td>
-                                    <td>{{ $request['action'] }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
 </div>
 
 <script>

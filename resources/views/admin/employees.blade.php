@@ -3,14 +3,11 @@
 @section('title', 'Manage Employees')
 
 @section('content')
-
-@if(auth()->user()->isAdmin())
-            <a href="{{ route('admin.addEmployee') }}" class="btn btn-primary">Add Employee</a>
-        @endif
-
-
-    <div class="container">
+<div class="container">
         <h1>Manage Employees</h1>
+        @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.addEmployee') }}" class="btn btn-primary mb-3">Add Employee</a>
+        @endif
         <table class="table">
             <thead>
                 <tr>

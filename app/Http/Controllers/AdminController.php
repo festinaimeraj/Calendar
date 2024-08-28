@@ -25,24 +25,17 @@ class AdminController extends Controller
         return view('admin.calendar');
     }
 
- 
-
     public function showEmployees()
-{
-    // Fetch all employees with their total approved leave days and count of approved requests
-    $employees = User::leftJoin('leave_requests', 'users.id', '=', 'leave_requests.user_id')
-        ->where('users.role', 'employee')
-        ->select('users.id', 'users.username', 'users.name', 'users.surname', 'users.email')
-        ->selectRaw('SUM(CASE WHEN leave_requests.answer = "approved" AND leave_requests.leave_type = 1 THEN DATEDIFF(leave_requests.end_date, leave_requests.start_date) + 1 ELSE 0 END) AS total_days_used')
-        ->groupBy('users.id', 'users.username', 'users.name', 'users.surname', 'users.email')
-        ->get();
+    {
+        $employees = User::leftJoin('leave_requests', 'users.id', '=', 'leave_requests.user_id')
+            ->where('users.role', 'employee')
+            ->select('users.id', 'users.username', 'users.name', 'users.surname', 'users.email')
+            ->selectRaw('SUM(CASE WHEN leave_requests.answer = "approved" AND leave_requests.leave_type = 1 THEN DATEDIFF(leave_requests.end_date, leave_requests.start_date) + 1 ELSE 0 END) AS total_days_used')
+            ->groupBy('users.id', 'users.username', 'users.name', 'users.surname', 'users.email')
+            ->get();
 
-    // Pass data to view
-    return view('admin.employees', compact('employees'));
-}
-
-
-    
+        return view('admin.employees', compact('employees'));
+    }
 
     public function addEmployee()
     {
@@ -99,18 +92,15 @@ class AdminController extends Controller
 
     public function showAdmin()
     {
-        // Fetch the employee details
         $admins = User::where('role', 'admin')->get();
         return view('admin.admins', compact('admins'));
     }
 
-    // Method to add an admin
     public function addAdmin()
     {
         return view('admin.addAdmin');
     }
 
-    // Method to store an admin
     public function storeAdmin(Request $request)
     {
         $request->validate([
@@ -134,14 +124,12 @@ class AdminController extends Controller
     }
 
     
-    // Method to edit an admin
     public function editAdmin($id)
     {
         $admin = User::findOrFail($id);
         return view('admin.editAdmin', compact('admin'));
     }
 
-    // Method to update an admin
     public function updateAdmin(Request $request, $id)
     {
         $request->validate([
@@ -184,11 +172,9 @@ class AdminController extends Controller
         $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
 
         if ($startDate === false || $endDate === false) {
-            // Handle the error if the date creation failed
             return response()->json(['error' => 'Invalid date format'], 400);
         }
 
-        // Format the date to 'Y-m-d' format
         $startDateFormatted = $startDate->format('Y-m-d');
         $endDateFormatted = $endDate->format('Y-m-d');
 
@@ -203,10 +189,8 @@ class AdminController extends Controller
             $leaveRequest->answer = 'pending';
             $leaveRequest->save();
 
-            // Set a success message in the session
             session()->flash('status', 'Your leave request has been submitted successfully and is pending approval.');
 
-            // Redirect based on the role
             if ($user->role === 'admin') {
                 return redirect()->back();
             } else {
@@ -233,20 +217,17 @@ class AdminController extends Controller
     
     public function processLeaveRequest(Request $request)
     {
-        // Validate the incoming request
         $request->validate([
             'request_id' => 'required',
             'action' => 'required|string|in:approve,deny',
             'response' => 'required|string|max:255',
         ]);
     
-        // Find the leave request and update it
         $leaveRequest = LeaveRequest::where('id', $request->request_id)->firstOrFail();
         $leaveRequest->answer = $request->action === 'approve' ? 'approved' : 'denied';
         $leaveRequest->response_message = $request->response;
         $leaveRequest->save();
     
-        // Fetch user details for email
         $user = $leaveRequest->user;
         $email = $user->email;
         $username = $user->username;
@@ -254,7 +235,6 @@ class AdminController extends Controller
         $startDate = $leaveRequest->start_date;
         $endDate = $leaveRequest->end_date;
     
-        // Prepare and send the email
         $subject = 'Leave Request ' . ucfirst($leaveRequest->answer);
         $body = view('emails.leave_response', compact('username', 'leaveType', 'startDate', 'endDate', 'leaveRequest'))->render();
     
@@ -265,47 +245,60 @@ class AdminController extends Controller
     
     public function viewLeaveReports(Request $request)
     {
-        // Fetch all leave types
         $leaveTypes = LeaveType::all();
 
-        // Initialize the query builder for leave requests
-    $query = LeaveRequest::with('user', 'type');
+        $query = LeaveRequest::with('user', 'type');
 
-    // Apply the search by username if provided
-    if ($request->filled('user')) {
-        $query->whereHas('user', function($q) use ($request) {
-            $q->where('name', 'like', '%' . $request->input('user') . '%')
-              ->orWhere('surname', 'like', '%' . $request->input('user') . '%');
-        });
-    }
+        if ($request->filled('user')) {
+            $query->whereHas('user', function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->input('user') . '%')
+                ->orWhere('surname', 'like', '%' . $request->input('user') . '%');
+            });
+        }
 
-    // Apply the search by leave type if provided
-    if ($request->filled('leave_type')) {
-        $query->where('leave_type', $request->input('leave_type'));
-    }
+        if ($request->filled('leave_type')) {
+            $query->where('leave_type', $request->input('leave_type'));
+        }
         
-        // Group leave requests by user's full name and map the necessary details
-        $requestsGrouped = LeaveRequest::with('user', 'type') // Eager load related user and leave type
-            ->get()
-            ->groupBy(function ($leave) {
-                return $leave->user->name . ' ' . $leave->user->surname; // Group by user's full name
-            })
-            ->map(function ($leaves, $username) {
-                return $leaves->map(function ($leave) {
-                    return [
-                        'leave_type' => $leave->type->name,
-                        'start_date' => $leave->start_date,
-                        'end_date' => $leave->end_date,
-                        'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1,
-                        'answer' => $leave->answer,
-                        'action' => $leave->action,
-                    ];
-                })->toArray();
-            })
-            ->toArray();
-      
-        // Pass both $requestsGrouped and $leaveTypes to the view
+        $requestsGrouped = $query->get()
+    ->groupBy(function ($leave) {
+        return $leave->user->name . ' ' . $leave->user->surname;
+    })
+    ->map(function ($leaves) use ($leaveTypes) {
+        // Initialize total days array with all leave types set to 0 using name
+        $totalDays = $leaveTypes->mapWithKeys(function ($type) {
+            return [$type->name => ['approved' => 0]];
+        })->toArray(); 
+
+        // Calculate total days per leave type based on status
+        foreach ($leaves as $leave) {
+            $days = $leave->start_date->diffInDays($leave->end_date) + 1;
+            $leaveTypeName = $leave->type->name; // Corrected key for leave type
+
+            if ($leave->answer === 'approved') {
+                // Check if leave type exists in totalDays
+                if (array_key_exists($leaveTypeName, $totalDays)) {
+                    $totalDays[$leaveTypeName]['approved'] += $days;
+                }
+            }
+        }
+
+        return [
+            'requests' => $leaves->map(function ($leave) {
+                return [
+                    'leave_type' => $leave->type->name,
+                    'start_date' => $leave->start_date,
+                    'end_date' => $leave->end_date,
+                    'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1,
+                    'answer' => $leave->answer,
+                ];
+            })->toArray(),
+            'total_days' => $totalDays, // Return the modified array
+        ];
+    })
+    ->toArray();
+
+
         return view('admin.view-leave-reports', compact('requestsGrouped', 'leaveTypes'));
     }
-    
 }
