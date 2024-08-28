@@ -29,14 +29,14 @@ class LeaveTypeController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'max_days' => 'nullable|integer|min:0',
+            'max_days' => 'required|integer|min:0',
         ]);
 
         $leaveType = LeaveType::create([
             'name' => $request->name,
-            'max_days' => isset($validated['max_days']) ? $validated['max_days'] : null, // Use null if not provi
+            'max_days' => $validated['max_days'],
         ]);
         return response()->json([
             'leave_type' => $leaveType,
@@ -55,14 +55,14 @@ class LeaveTypeController extends Controller
             'message' => 'Leave type not found'], 404);
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'max_days' => 'nullable|integer|min:0',
+            'max_days' => 'required|integer|min:0',
         ]);
 
         $leaveType->update([
             'name' => $request->name,
-            'max_days' => isset($validated['max_days']) ? $validated['max_days'] : $leaveType->max_days, // Preserve existing value if not provided
+            'max_days' => $validated['max_days'],
         ]);
 
         return response()->json([
