@@ -94,13 +94,13 @@
                     console.log('Event updated successfully:', data);
                 } else {
                     alert(data.message || 'Failed to update event');
-                    info.revert(); // Revert the event to its original state
+                    info.revert(); 
                 }
             })
             .catch(error => {
                 console.error('Error updating event:', error);
                 alert('Failed to update event. Please try again.');
-                info.revert(); // Revert the event to its original state
+                info.revert(); 
             });
         },
         eventClick: function(info) {

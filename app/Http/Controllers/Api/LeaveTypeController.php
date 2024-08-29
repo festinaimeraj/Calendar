@@ -45,6 +45,7 @@ class LeaveTypeController extends Controller
         ], 201);
     }
 
+    
     public function update(Request $request, $id)
     {
         $leaveType = LeaveType::find($id);

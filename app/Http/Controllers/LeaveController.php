@@ -9,25 +9,26 @@ use App\Models\LeaveType;
 
 class LeaveController extends Controller
 {
-    public function showLeaveTotals() {
-        $user = Auth::user();
-        
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'You must be logged in to view this page.');
-        }
-        $leaveTypes = LeaveType::whereIn('name', ['Pushim', 'Pushim mjeksor', 'Tjeter'])->pluck('id');
+    public function showLeaveTotals()
+    {
+        $userId = Auth::id();
 
-        $leaveTotals = LeaveRequest::select('leave_type', DB::raw('SUM(DATEDIFF(end_date, start_date) + 1) AS total_days'))
-            ->where('user_id', $user->id)
+        $leaveTypeAllocations = LeaveType::pluck('max_days', 'id')->toArray();
+      
+        $leaveTotals = LeaveRequest::where('user_id', $userId)
             ->where('answer', 'approved')
-            ->whereIn('leave_type', $leaveTypes)
+            ->selectRaw('leave_type, SUM(DATEDIFF(end_date, start_date) + 1) as total_days')
             ->groupBy('leave_type')
             ->get();
 
-        $totalDays = $leaveTotals->sum('total_days');
-        $remainingDays = 18 - $totalDays;
+        
+        $remainingDaysByType = [];
+        
+        foreach ($leaveTotals as $leave) {
+            $allocatedDays = $leaveTypeAllocations[$leave->leave_type] ;
+            $remainingDaysByType[$leave->leave_type] = $allocatedDays - $leave->total_days;            
+        } 
 
-
-        return view('employee.my-leave-totals', compact('leaveTotals', 'remainingDays'));
+        return view('employee.my-leave-totals', compact('leaveTotals', 'remainingDaysByType'));
     }
 }

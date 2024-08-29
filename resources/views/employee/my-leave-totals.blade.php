@@ -23,7 +23,7 @@
                                 <span class="badge badge-primary badge-pill">{{ $leave->total_days }} days used</span>
                             </li>
                             <div class="mt-3 text-center">
-                                <p>You have {{ $remainingDaysByType[$leave->leave_type] ?? 0 }} days left.</p>
+                                <p>You have {{ $remainingDaysByType[$leave->leave_type]  }} days left.</p>
                             </div>
                             @endforeach
                         </ul>
