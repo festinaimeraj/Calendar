@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/employees', [EmployeesController::class, 'index']);
         Route::post('/employees', [EmployeesController::class, 'store']);
-        Route::post('/employees/{id}', [EmployeesController::class, 'updateEmployee']);
+        Route::post('/update-employees/{id}', [EmployeesController::class, 'updateEmployee']);
         Route::post('/employees/{id}', [EmployeesController::class, 'destroy']);
     
         Route::get('/admins', [AdminsController::class, 'index']);
@@ -69,7 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [LeaveTypeController::class, 'show']);
         Route::post('/', [LeaveTypeController::class, 'store']);
         Route::put('/edit/{id}', [LeaveTypeController::class, 'update']);
-        Route::delete('/delete/{id}', [LeaveTypeController::class, 'destroy']);
+        Route::delete('/{id}', [LeaveTypeController::class, 'destroy']);
     });
 });
 
