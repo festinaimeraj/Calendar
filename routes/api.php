@@ -69,7 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [LeaveTypeController::class, 'show']);
         Route::post('/', [LeaveTypeController::class, 'store']);
         Route::put('/edit/{id}', [LeaveTypeController::class, 'update']);
-        Route::delete('delete/{id}', [LeaveTypeController::class, 'destroy']);
+        Route::delete('/delete/{id}', [LeaveTypeController::class, 'destroy']);
     });
 });
 

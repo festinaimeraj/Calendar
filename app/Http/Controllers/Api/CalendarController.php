@@ -41,7 +41,7 @@ class CalendarController extends Controller
                                 ];
                             });
 
-        return response()->json(['success' => true, 'events' => $events]);
+        return response()->json(['status' => true, 'events' => $events]);
     }
 
     public function update(Request $request)
@@ -58,10 +58,10 @@ class CalendarController extends Controller
             $leaveRequest->end_date = $validated['end_date'] ?? $leaveRequest->end_date;
             $leaveRequest->save();
 
-            return response()->json(['success' => true, 'message' => 'Leave request updated successfully.']);
+            return response()->json(['status' => true, 'message' => 'Leave request updated successfully.']);
         }
 
-        return response()->json(['success' => false, 'message' => 'Leave request not found.'], 404);
+        return response()->json(['status' => false, 'message' => 'Leave request not found.'], 404);
     }
 
     public function delete(Request $request)
@@ -73,9 +73,9 @@ class CalendarController extends Controller
         $leaveRequest = LeaveRequest::find($validated['id']);
         if ($leaveRequest) {
             $leaveRequest->delete();
-            return response()->json(['success' => true, 'message' => 'Leave request deleted successfully.']);
+            return response()->json(['status' => true, 'message' => 'Leave request deleted successfully.']);
         }
 
-        return response()->json(['success' => false, 'message' => 'Leave request not found.'], 404);
+        return response()->json(['status' => false, 'message' => 'Leave request not found.'], 404);
     }
 }

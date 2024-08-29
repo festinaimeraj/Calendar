@@ -30,13 +30,13 @@ class ApproveDenyRequestsController extends Controller
             $leaveRequest->save();
 
             return response()->json([
-                'status' => 200,
+                'status' => true,
                 "message" => "Leave request approved successfully",
                 "request" => $leaveRequest
-            ]);
+            ], 200);
         } else {
             return response()->json([
-                'status' => 404,
+                'status' => false,
                 "message" => "Leave request not found or not pending."
             ], 404);
         }
@@ -58,13 +58,13 @@ class ApproveDenyRequestsController extends Controller
             $leaveRequest->save();
 
             return response()->json([
-                'status' => 200,
+                'status' => true,
                 "message" => "Leave request denied successfully",
                 "request" => $leaveRequest
-            ]);
+            ] , 200);
         } else {
             return response()->json([
-                'status' => 404,
+                'status' => false,
                 "message" => "Leave request not found or not pending."
             ], 404);
         }

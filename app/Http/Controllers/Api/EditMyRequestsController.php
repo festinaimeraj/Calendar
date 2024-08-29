@@ -30,12 +30,12 @@ class EditMyRequestsController extends Controller
         if ($request) {
             return response()->json([
                 "request" => $request,
-                "status" => "success",
+                "status" => true,
                 'message' => 'Leave request retrieved successfully.',
             ]);
         } else {
             return response()->json([
-                'status' => 'error',
+                'status' => false,
                 "message" => "Leave request not found or not pending."
             ], 404);
         }
@@ -60,12 +60,12 @@ class EditMyRequestsController extends Controller
             $leaveRequest->save();
 
             return response()->json([
-                'status' => 'success',
+                'status' => true,
                 "message" => "Leave request updated successfully."
             ]);
         } else {
             return response()->json([
-                'status' => 'error',
+                'status' => false,
                 "message" => "Leave request not found or not pending."
             ], 404);
         }

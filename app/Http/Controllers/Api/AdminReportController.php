@@ -42,7 +42,7 @@ class AdminReportController extends Controller
 
         return response()->json([
             'users' => $results,
-            'success' => true,
+            'status' => true,
             'message' => 'Report generated successfully',
         ]);
     }
@@ -69,7 +69,7 @@ class AdminReportController extends Controller
         ->toArray();
         return response()->json([
             'requests_grouped' => $requestsGrouped,
-            'success' => true,
+            'status' => true,
             'message' => 'Report generated successfully',
         ]);
     }   

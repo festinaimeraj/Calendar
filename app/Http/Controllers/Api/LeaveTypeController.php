@@ -20,7 +20,7 @@ class LeaveTypeController extends Controller
 
         if(!$leaveType) {
             return response()->json([
-                'status' => 'error',
+                'status' => false,
                 'message' => 'Leave type not found',
             ], 404);
         }
@@ -40,7 +40,7 @@ class LeaveTypeController extends Controller
         ]);
         return response()->json([
             'leave_type' => $leaveType,
-            'status' => 'success',
+            'status' => true,
             'message' => 'Leave type created successfully',
         ], 201);
     }
@@ -52,7 +52,7 @@ class LeaveTypeController extends Controller
 
         if(!$leaveType) {
             return response()->json([
-            'success' => false,
+            'status' => false,
             'message' => 'Leave type not found'], 404);
         }
 
@@ -68,7 +68,7 @@ class LeaveTypeController extends Controller
 
         return response()->json([
             'leave_type' => $leaveType,
-            'success' => true,
+            'status' => true,
             'message' => 'Leave type updated successfully',
         ]);
     }
@@ -79,14 +79,14 @@ class LeaveTypeController extends Controller
 
        if(!$leaveType) {
            return response()->json([
-            'success' => false,
+            'status' => false,
             'message' => 'Leave type not found'], 404);
        }
 
        $leaveType->delete();
 
        return response()->json([
-        'success' => true,
+        'status' => true,
         'message' => 'Leave type deleted successfully']);
     }
 }
