@@ -9,8 +9,8 @@
      @endforeach
  @endif
 <div class="container">
-    <h1>Add Employee</h1>
-    <form method="POST" action="{{ route('admin.storeEmployee') }}">
+    <h1>Add Admin</h1>
+    <form method="POST" action="{{ route('admin.storeAdmin') }}">
         @csrf
         <div class="form-group">
             <label for="username">Username</label>

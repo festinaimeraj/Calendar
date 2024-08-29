@@ -21,8 +21,8 @@
                     <div class="request-info">
                         <p><strong>User:</strong> {{ $request->name . ' '. $request->surname  }}</p>
                         <p><strong>Leave Type:</strong> {{ $request->leave_type_name }}</p>
-                        <p><strong>Start Date:</strong> {{ $request->start_date }}</p>
-                        <p><strong>End Date:</strong> {{ $request->end_date }}</p>
+                        <p><strong>Start Date: </strong> {{ \Carbon\Carbon::parse($request->start_date)->format('d-m-Y') }}</p>
+                        <p><strong>End Date: </strong>{{ \Carbon\Carbon::parse($request->end_date)->format('d-m-Y') }}</p>
                         <p><strong>Reason:</strong> {{ $request->reason }}</p>
                     </div>
                     <form method="POST" action="{{ route('admin.processLeaveRequest') }}" class="request-form">

@@ -159,13 +159,30 @@ class AdminController extends Controller
 
     public function submitLeaveRequest(Request $request)
     {
-        $request->validate([
-            'leave_type' => 'required',
-            'start_date' => 'required|date_format:d/m/Y',
-        'end_date' => 'required|date_format:d/m/Y',
-            'reason' => 'required|string|max:500',
-        ]);
+        $currentYear = date('Y');
+
         
+    $request->validate([
+        'leave_type' => 'required',
+        'start_date' => [
+            'required',
+            'date_format:d/m/Y',
+            'before_or_equal:31/12/'.$currentYear,
+            'after_or_equal:01/01/'.$currentYear,
+        ],
+        'end_date' => [
+            'required',
+            'date_format:d/m/Y',
+            'before_or_equal:31/12/'.$currentYear,
+            'after_or_equal:start_date',
+        ],
+        'reason' => 'required|string|max:500',
+    ], [
+        'start_date.before_or_equal' => 'The start date must be within the current year ('.$currentYear.').',
+        'start_date.after_or_equal' => 'The start date must be within the current year ('.$currentYear.').',
+        'end_date.before_or_equal' => 'The end date must be within the current year ('.$currentYear.').',
+        'end_date.after_or_equal' => 'The end date must be after or equal to the start date.',
+    ]);
 
         $user = Auth::user();
         $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date);
@@ -178,6 +195,21 @@ class AdminController extends Controller
         $startDateFormatted = $startDate->format('Y-m-d');
         $endDateFormatted = $endDate->format('Y-m-d');
 
+        $existingRequest = LeaveRequest::where('user_id', $user->id)
+        ->where('answer', 'pending') 
+        ->where(function($query) use ($startDate, $endDate) {
+            $query->whereBetween('start_date', [$startDate, $endDate])
+                ->orWhereBetween('end_date', [$startDate, $endDate])
+                ->orWhere(function($query) use ($startDate, $endDate) {
+                    $query->where('start_date', '<=', $startDate)
+                            ->where('end_date', '>=', $endDate);
+                });
+        })
+        ->first();
+
+    if ($existingRequest) {
+        return redirect()->back()->withErrors(['error' => 'You have already submitted a leave request that overlaps with these dates.']);
+    }
 
         try {
             $leaveRequest = new LeaveRequest();

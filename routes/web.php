@@ -56,8 +56,8 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     Route::get('/', [EmployeeController::class, 'index'])->name('index');
     Route::get('/calendar', [EmployeeController::class, 'calendar'])->name('calendar');
     Route::get('/request-leave', [EmployeeController::class, 'requestLeave'])->name('request_leave');
-    Route::post('/request-leave', [EmployeeController::class, 'submitLeaveRequest'])->name('request_leave.submit'); // Corrected name
-    Route::get('/my-leave-totals', [EmployeeController::class, 'myLeaveTotals'])->name('my-leave-totals');
+    Route::post('/request-leave', [EmployeeController::class, 'submitLeaveRequest'])->name('request_leave.submit'); 
+    // Route::get('/my-leave-totals', [EmployeeController::class, 'myLeaveTotals'])->name('my-leave-totals');
     Route::get('/edit-my-requests', [EmployeeController::class, 'editMyRequests'])->name('edit-my-requests');
     Route::post('/update-my-request', [LeaveRequestController::class, 'update'])->name('update-my-request');
     Route::get('/my-leave-totals', [LeaveController::class, 'showLeaveTotals'])->name('my-leave-totals');
@@ -65,7 +65,6 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
 
 // Calendar routes
 Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
-// Route::post('/submit_leave_request', [LeaveRequestController::class, 'store'])->name('submit_leave_request');
 Route::get('/load_events', [CalendarController::class, 'loadEvents'])->name('load_events');
 Route::post('/update_event', [CalendarController::class, 'updateEvent'])->name('update_event');
 Route::post('/delete_event', [CalendarController::class, 'deleteEvent'])->name('delete_event');

@@ -39,8 +39,8 @@
                                     <tr>
                                         <td>{{ $request->id }}</td>
                                         <td>{{ $request->leave_type_name }}</td>
-                                        <td>{{ $request->start_date }}</td>
-                                        <td>{{ $request->end_date }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($request->start_date)->format('d/m/Y') }}</td> 
+                                        <td>{{ \Carbon\Carbon::parse($request->end_date)->format('d/m/Y') }}</td> 
                                         <td>{{ $request->answer }}</td>
                                         <td>
                                             <a href="{{ route('employee.edit-my-requests', ['id' => $request->id]) }}" class="btn btn-primary">Edit</a>
@@ -57,52 +57,61 @@
 </div>
 
 @if(isset($editRequest))
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        Edit Leave Request
+    <div class="container d-flex justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h2 class="mb-4 text-center text-primary">Edit Leave Request</h2>
+                
+                @if(session('status'))
+                    <div class="alert alert-success">
+                        {{ session('status') }}
                     </div>
-                    <div class="card-body">
-                        <form action="{{ route('employee.update-my-request') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="requestId" value="{{ $editRequest->id }}">
-                            <div class="form-group">
-                                <label for="leave_type">Leave Type:</label>
-                                <select name="leave_type" id="leave_type" class="form-control" required>
-                                    @foreach ($leaveTypes as $leaveType)
-                                        <option value="{{ $leaveType->id }}" {{ $editRequest->leave_type == $leaveType->id ? 'selected' : '' }}>
-                                            {{ $leaveType->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="start_date">Start Date:</label>
-                                <input type="date" id="start_date" name="start_date" class="form-control" value="{{ $editRequest->start_date->format('Y-m-d') }}" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="end_date">End Date:</label>
-                                <input type="date" id="end_date" name="end_date" class="form-control" value="{{ $editRequest->end_date->format('Y-m-d') }}" required>
-                            </div>
-                            <button type="submit" class="btn btn-success">Update Request</button>
-                        </form>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                </div>
+                @endif
+
+                <form action="{{ route('employee.update-my-request') }}" method="POST" id="editLeaveForm">
+                    @csrf
+                    <input type="hidden" name="requestId" value="{{ $editRequest->id }}">
+
+                    <div class="form-group mb-3">
+                        <label for="start_date" class="form-label">Start Date:</label>
+                        <input type="text" id="start_date" name="start_date" class="form-control" placeholder="dd/mm/yyyy" value="{{ $editRequest->start_date->format('d/m/Y') }}" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="end_date" class="form-label">End Date:</label>
+                        <input type="text" id="end_date" name="end_date" class="form-control" placeholder="dd/mm/yyyy" value="{{ $editRequest->end_date->format('d/m/Y') }}" required>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary btn-block w-100">Update Request</button>
+                </form>
             </div>
         </div>
     </div>
-@endif  
-<script>
-    $(document).ready(function() {
 
-        $('#start_date').on('change', function() {
-            var startDate = $(this).datepicker('getDate');
-            $('#end_date').datepicker('option', 'minDate', startDate);
-            $('#end_date').datepicker('setDate', startDate);
+    <script>
+        $(document).ready(function() {
+            $('#start_date, #end_date').datepicker({
+                dateFormat: 'dd/mm/yy',
+                beforeShowDay: $.datepicker.noWeekends
+            });
+
+            $('#start_date').on('change', function() {
+                var startDate = $(this).datepicker('getDate');
+                $('#end_date').datepicker('option', 'minDate', startDate);
+                $('#end_date').datepicker('setDate', startDate);
+            });
         });
-    });
-</script>
+    </script>
+@endif
 
 @endsection

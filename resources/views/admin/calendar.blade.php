@@ -33,12 +33,8 @@
         events: '/load_events',
         editable: true,
         selectable: true,
-        droppable: true,
-        eventResizableFromStart: true, 
-        eventStartEditable: true,
-        eventDurationEditable: true,
+        eventResizableFromEnd: true, 
         eventDrop: function(info) {
-
             var eventData = {
                 id: info.event.id,
                 start: info.event.start.toISOString(),
@@ -55,18 +51,21 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (!data.success) {
+                if (data.success) {
+                    toastr.success(data.message || 'Event updated successfully');
+                } else {
                     info.revert();
-                    alert(data.message || 'Failed to update event');
+                    toastr.error(data.message || 'Failed to update event');
                 }
             })
-            .catch(() => {
+            .catch((error) => {
                 info.revert();
-                alert('Failed to update event');
+                console.error('Error:', error);
+                toastr.error('Failed to update event');
             });
         },
         eventResize: function(info) {
-            // if(!isAdmin) return;
+            if(!isAdmin) return;
             var eventData = {
                 id: info.event.id,
                 start: info.event.start.toISOString(),
