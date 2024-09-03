@@ -25,11 +25,21 @@ class EditMyRequestsController extends Controller
         $request = LeaveRequest::where('id', $requestId)
                                ->where('user_id', $userId)
                                ->where('answer', 'pending')
+                               ->with('user:id,username') 
                                ->first();
-
+    
         if ($request) {
             return response()->json([
-                "request" => $request,
+                "request" => [
+                    'id' => $request->id,
+                    'username' => $request->user->username,
+                    'leave_type' => $request->type->name,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                    'reason' => $request->reason,
+                    'answer' => $request->answer,
+                    
+                ],
                 "status" => true,
                 'message' => 'Leave request retrieved successfully.',
             ]);
@@ -40,6 +50,7 @@ class EditMyRequestsController extends Controller
             ], 404);
         }
     }
+    
 
     public function update(Request $request, $requestId) {
         $request->validate([
