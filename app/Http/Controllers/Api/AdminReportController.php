@@ -13,40 +13,43 @@ class AdminReportController extends Controller
     public function search(Request $request) {
         $username = $request->input('username');
         $leaveType = $request->input('leave_type');
-
+    
         $users = User::when($username, function ($query) use ($username) {
-            return $query->where('username', 'LIKE', '%$username%'); 
+            return $query->where('username', 'LIKE', "%{$username}%");
         })->get();
-
+    
         $results = [];
+    
         foreach ($users as $user) {
             $totalDaysUsed = DB::table('leave_requests')
-            ->where('user_id', $user->id)
-            ->where('leave_type', '!=', 'flex')
-            ->where('answer', '!=', 'pending') 
-            ->selectRaw('SUM(DATEDIFF(end_date, start_date) + 1) as aggregate')
-            ->value('aggregate');
-            
+                ->where('user_id', $user->id)
+                ->where('leave_type', '!=', 'flex')
+                ->where('answer', '!=', 'pending')
+                ->where('answer' , '!=', 'denied')
+                ->selectRaw('leave_type, SUM(DATEDIFF(end_date, start_date) + 1) as aggregate')
+                ->groupBy('leave_type')
+                ->get();
+    
             $leaveRequests = LeaveRequest::where('user_id', $user->id)
                 ->when($leaveType, function ($query) use ($leaveType) {
                     return $query->where('leave_type', $leaveType);
                 })
-                ->get();
-
-            $result[] = [
+                ->get(['leave_type', 'start_date', 'end_date', 'answer', DB::raw('DATEDIFF(end_date, start_date) + 1 as requested_days')]);
+    
+            $results[] = [
                 'username' => $user->username,
                 'total_days_used' => $totalDaysUsed,
-                'leave_requests' => $leaveRequests
+                'leave_requests' => $leaveRequests,
             ];
         }
-
+    
         return response()->json([
             'users' => $results,
             'status' => true,
             'message' => 'Report generated successfully',
         ]);
     }
-
+    
     public function showReport() {
         
         $requestsGrouped = LeaveRequest::with('user') 
@@ -69,7 +72,7 @@ class AdminReportController extends Controller
         ->toArray();
         return response()->json([
             'requests_grouped' => $requestsGrouped,
-            'status' => true,
+            'success' => true,
             'message' => 'Report generated successfully',
         ]);
     }   

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\LeaveType;
 
 class RequestLeaveController extends Controller{
 
@@ -34,11 +34,19 @@ public function store(Request $request)
         ], 422);
     }
 
-   
+    $leaveType = LeaveType::where('name', $request->leave_type)->first();
+
+    if (!$leaveType) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Leave type not found'
+        ], 404);
+    }
+
     $leaveRequest = new LeaveRequest();
 
     $leaveRequest->user_id = Auth::user()->id;
-    $leaveRequest->leave_type = $request->leave_type;
+    $leaveRequest->leave_type = $leaveType->id;
     $leaveRequest->start_date = $request->start_date;
     $leaveRequest->end_date = $request->end_date;
     $leaveRequest->reason = $request->reason;
@@ -47,6 +55,7 @@ public function store(Request $request)
     return response()->json([
         'status' => true,
         'message' => 'Leave request created successfully.',
+        'leave_type' => $leaveType->name
     ], 201);
 }
 

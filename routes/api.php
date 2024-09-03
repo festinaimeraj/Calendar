@@ -51,7 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/leave-requests/deny', [ApproveDenyRequestsController::class, 'deny']);
     
     
-        Route::post('/admin/report', [AdminReportController::class, 'search']);
+        Route::get('/admin/report', [AdminReportController::class, 'search']);
+        Route::post('/admin/report', [AdminReportController::class, 'showReport']);
     });
     
     Route::middleware('role:employee')->group(function () {
