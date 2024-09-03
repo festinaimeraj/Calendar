@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CalendarController extends Controller
 {
@@ -39,22 +40,32 @@ class CalendarController extends Controller
     
     
     public function updateEvent(Request $request)
-    {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
-        }
-
-        $event = LeaveRequest::find($request->id);
-        if ($event) {
-            $event->start_date = $request->start;
-            $event->end_date = $request->end;
-            $event->save();
-
-            return response()->json(['status' => true]);
-        }
-
-        return response()->json(['status' => false, 'message' => 'Event not found']);
+{
+    if (!Auth::check() || Auth::user()->role !== 'admin') {
+        return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
     }
+
+    // Log request data for debugging
+    Log::info('Update Event Request:', $request->all());
+
+    $validatedData = $request->validate([
+        'id' => 'required|integer|exists:leave_requests,id',
+        'start_date' => 'required|date',
+        'end_date' => 'nullable|date'
+    ]);
+
+    $event = LeaveRequest::find($validatedData['id']);
+    if ($event) {
+        $event->start_date = $validatedData['start_date'];
+        $event->end_date = $validatedData['end_date'];
+        $event->save();
+
+        return response()->json(['status' => true]);
+    }
+
+    return response()->json(['status' => false, 'message' => 'Event not found']);
+}
+
 
     public function deleteEvent(Request $request)
     {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <style>
@@ -31,7 +31,7 @@
             <h2 class="email-title">Leave Request {{ ucfirst($leaveRequest->answer) }}</h2>
         </div>
         <div class="email-body">
-            <p>Dear {{ $username }},</p>
+            <p>Dear {{ $fullName }},</p>
             <p>Your leave request has been <strong>{{ $leaveRequest->answer }}</strong>.</p>
             <p><strong>Leave Type:</strong> {{ $leaveType }}</p>
             <p><strong>Start Date:</strong> {{ $startDate }}</p>
@@ -43,4 +43,4 @@
         </div>
     </div>
 </body>
-</html>
+</html> -->

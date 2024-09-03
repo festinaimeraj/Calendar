@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\LeaveType;
+use Carbon\Carbon;
 
 
 class EmployeeController extends Controller
@@ -68,8 +69,8 @@ class EmployeeController extends Controller
             return response()->json(['error' => 'Invalid date format'], 400);
         }
 
-        $startDateFormatted = $startDate->format('Y-m-d');
-        $endDateFormatted = $endDate->format('Y-m-d');
+        $startDateFormatted = $startDate->format('d-m-Y');
+        $endDateFormatted = $endDate->format('d-m-Y');
 
         $existingRequest = LeaveRequest::where('user_id', $user->id)
         ->where('answer', 'pending') 
@@ -96,6 +97,8 @@ class EmployeeController extends Controller
             $leaveRequest->reason = $request->reason;
             $leaveRequest->answer = 'pending';
             $leaveRequest->save();
+
+            $leaveTypeName = $leaveRequest->type->name;
 
             $adminEmail = 'festinaimeraj1@gmail.com'; 
             $subject = 'New Leave Request';
@@ -133,8 +136,8 @@ class EmployeeController extends Controller
                         </div>
                         <div class='email-body'>
                             <p>Dear Admin,</p>
-                            <p><strong>{$user->name}</strong> has requested leave.</p>
-                            <p><strong>Leave Type:</strong> {$request->type->name}</p>
+                            <p><strong>{$user->name} {$user->surname}</strong> has requested leave.</p>
+                            <p><strong>Leave Type:</strong> {$leaveTypeName}</p>
                             <p><strong>Start Date:</strong> {$startDateFormatted}</p>
                             <p><strong>End Date:</strong> {$endDateFormatted}</p>
                             <p><strong>Reason:</strong> {$request->reason}</p>

@@ -13,15 +13,14 @@
     <script src='node_modules/@fullcalendar/daygrid/main.min.js'></script>
     <script src='node_modules/@fullcalendar/timegrid/main.min.js'></script>
     <script src='node_modules/@fullcalendar/list/main.min.js'></script>
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
         
     <script>
        document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var isAdmin = true; // Admin role
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+    var calendarEl = document.getElementById('calendar');
+    var isAdmin = true; // Admin role
+    var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         displayEventTime: false,
         weekends: false,
@@ -33,12 +32,15 @@
         events: '/load_events',
         editable: true,
         selectable: true,
-        eventResizableFromEnd: true, 
+        droppable: true,
+        eventResizableFromStart: true, 
+        eventStartEditable: true,
+        eventDurationEditable: true,
         eventDrop: function(info) {
             var eventData = {
                 id: info.event.id,
-                start: info.event.start.toISOString(),
-                end: info.event.end ? info.event.end.toISOString() : null
+                start_date: info.event.start.toISOString(),
+                end_date: info.event.end ? info.event.end.toISOString() : null
             };
 
             fetch('/update_event', {
@@ -51,28 +53,26 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    toastr.success(data.message || 'Event updated successfully');
-                } else {
+                if (!data.status) {
                     info.revert();
-                    toastr.error(data.message || 'Failed to update event');
+                    alert(data.message || 'Failed to update event');
                 }
             })
-            .catch((error) => {
-                info.revert();
-                console.error('Error:', error);
-                toastr.error('Failed to update event');
-            });
+            .catch(error => {
+    console.error('Error updating event:', error);
+    info.revert();
+    alert('Failed to update event. Please check the console for more details.');
+});
+
         },
         eventResize: function(info) {
-            if(!isAdmin) return;
+            if (!isAdmin) return;
+
             var eventData = {
                 id: info.event.id,
-                start: info.event.start.toISOString(),
-                end: info.event.end ? info.event.end.toISOString() : null
+                start_date: info.event.start.toISOString(),
+                end_date: info.event.end ? info.event.end.toISOString() : null
             };
-
-          updateEvent(eventData);
 
             fetch('/update_event', {
                 method: 'POST',
@@ -82,24 +82,17 @@
                 },
                 body: JSON.stringify(eventData)
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    console.log('Event updated successfully:', data);
-                } else {
+                if (!data.status) {
                     alert(data.message || 'Failed to update event');
-                    info.revert(); 
+                    info.revert(); // Revert the event to its original state
                 }
             })
             .catch(error => {
                 console.error('Error updating event:', error);
                 alert('Failed to update event. Please try again.');
-                info.revert(); 
+                info.revert(); // Revert the event to its original state
             });
         },
         eventClick: function(info) {
@@ -118,7 +111,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
+                    if (data.status) {
                         info.event.remove();
                         alert(data.message || 'Event deleted successfully');
                     } else {

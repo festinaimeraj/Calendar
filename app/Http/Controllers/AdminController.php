@@ -12,6 +12,7 @@ use App\Mail\GenericMail;
 use App\Models\LeaveType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -259,21 +260,70 @@ class AdminController extends Controller
             $leaveRequest->answer = $request->action === 'approve' ? 'approved' : 'denied';
             $leaveRequest->response_message = $request->response;
             $leaveRequest->save();
-        
+
             $user = $leaveRequest->user;
             $email = $user->email;
-            $username = $user->username;
-            $leaveType = $leaveRequest->leave_type;
+            $fullName = $user->name.' '.$user->surname;
+            $leaveType = $leaveRequest->type->name;
             $startDate = $leaveRequest->start_date;
             $endDate = $leaveRequest->end_date;
+
+            $startDate = Carbon::parse($leaveRequest->start_date)->format('Y-m-d');
+            $endDate = Carbon ::parse($leaveRequest->end_date)->format('Y-m-d');
         
             $subject = 'Leave Request ' . ucfirst($leaveRequest->answer);
-            $body = view('emails.leave_response', compact('username', 'leaveType', 'startDate', 'endDate', 'leaveRequest'))->render();
+            $body = "
+            <html>
+                <head>
+                    <style>
+                        .email-container {
+                            font-family: Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                        }
+                        .email-header {
+                            background-color: #f2f2f2;
+                            padding: 10px;
+                            text-align: center;
+                        }
+                        .email-body {
+                            padding: 20px;
+                        }
+                        .email-footer {
+                            background-color: #f2f2f2;
+                            padding: 10px;
+                            text-align: center;
+                        }
+                        .email-title {
+                            color: #444;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class='email-container'>
+                        <div class='email-header'>
+                            <h2 class='email-title'>Leave Request {$leaveRequest->answer}</h2>
+                        </div>
+                        <div class='email-body'>
+                            <p>Dear {$fullName},</p>
+                            <p>Your leave request for <strong>{$leaveType}</strong> has been <strong>{$leaveRequest->answer}</strong>.</p>
+                            <p><strong>Start Date:</strong> {$startDate}</p>
+                            <p><strong>End Date:</strong> {$endDate}</p>
+                            <p><strong>Response:</strong> {$leaveRequest->response_message}</p>
+                        </div>
+                        <div class='email-footer'>
+                            <p>This is an automated message. Please do not reply.</p>
+                        </div>
+                    </div>
+                </body>
+            </html>
+            ";
         
             Mail::to($email)->send(new \App\Mail\GenericMail($subject, $body));
         
             return redirect()->route('admin.approve-deny-requests')->with('success', 'Leave request has been ' . $leaveRequest->answer . '.');
         }
+        
     
     public function viewLeaveReports(Request $request)
         {

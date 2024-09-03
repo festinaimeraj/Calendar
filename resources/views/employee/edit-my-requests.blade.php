@@ -82,6 +82,14 @@
                     <input type="hidden" name="requestId" value="{{ $editRequest->id }}">
 
                     <div class="form-group mb-3">
+                        <label for="leave_type" class="form-label">Leave Type:</label>
+                        <select id="leave_type" name="leave_type" class="form-select" required>
+                            @foreach($leaveTypes as $leaveType) 
+                                <option value="{{ $leaveType->id }}" {{ $editRequest->leave_type == $leaveType->id ? 'selected' : '' }}>{{ $leaveType->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
                         <label for="start_date" class="form-label">Start Date:</label>
                         <input type="text" id="start_date" name="start_date" class="form-control" placeholder="dd/mm/yyyy" value="{{ $editRequest->start_date->format('d/m/Y') }}" required>
                     </div>
