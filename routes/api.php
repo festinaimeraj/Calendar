@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/request-leave', [RequestLeaveController::class, 'index']);
     Route::post('/submit-leave-request', [RequestLeaveController::class, 'store']);
 
-    Route::get('/calendar/events', [CalendarController::class, 'index']);
+    Route::get('/calendar/events', [CalendarController::class, 'loadEvents']);
 
     Route::middleware('role:admin')->group(function () {
         Route::post('/calendar/events/update', [CalendarController::class, 'update']);
