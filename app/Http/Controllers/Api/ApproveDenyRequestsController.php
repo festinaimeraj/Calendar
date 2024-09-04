@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
-
+use Illuminate\Support\Facades\Validator;
 class ApproveDenyRequestsController extends Controller
 {
     public function index(){
@@ -16,11 +16,19 @@ class ApproveDenyRequestsController extends Controller
     
     public function approve(Request $request){
         
-        $request->validate([
-            'id' => 'required',
-            'response' => 'required|string'
-        ]);
+        $validateRequest = Validator::make($request->all(),
+            [
+                'id' => 'required',
+            'response_message' => 'required|string'
+            ]);
 
+            if($validateRequest->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validateRequest->errors()
+                ], 401);
+            }
         
         $leaveRequest = LeaveRequest::find($request->id);
 
@@ -43,11 +51,20 @@ class ApproveDenyRequestsController extends Controller
     }
 
     public function deny(Request $request){
-        $request->validate([
-            'request_id' => 'required',
-            'response_message' => 'required|string'
+        $validateRequest = Validator::make($request->all(),
+        [
+            'id' => 'required',
+        'response_message' => 'required|string'
         ]);
 
+        if($validateRequest->fails()){
+            return response()->json([
+                'status' => false,
+                'message' => 'validation error',
+                'errors' => $validateRequest->errors()
+            ], 401);
+        }
+    
         
         $leaveRequest = LeaveRequest::find($request->request_id);
 

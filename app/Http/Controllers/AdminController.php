@@ -375,6 +375,7 @@ class AdminController extends Controller
                 'total_days' => $totalDays, 
             ];
         })
+        ->sortKeys()
         ->toArray();
 
 

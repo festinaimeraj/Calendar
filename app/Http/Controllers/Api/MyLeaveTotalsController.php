@@ -7,7 +7,6 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use \Illuminate\Support\Facades\Log;
 
 class MyLeaveTotalsController extends Controller
 {
@@ -34,8 +33,6 @@ class MyLeaveTotalsController extends Controller
             });
 
             $maxLeaveDays = LeaveType::where('id', $leaveType)->value('max_days');
-            
-            Log::info("Leave Type: $leaveType, Max Days: $maxLeaveDays");
 
             $maxLeaveDays = $maxLeaveDays ?? 0;
 
