@@ -10,34 +10,23 @@ use App\Models\LeaveRequest;
 class EditMyRequestsController extends Controller
 {
     
-    public function index() {
+    public function index($requestId) {
         $userId = Auth::id(); 
-        $requests = LeaveRequest::where('user_id', $userId)
+        $requests = LeaveRequest::where('id', $requestId)
+                                ->where('user_id', $userId)
                                 ->where('answer', 'pending')
-                                ->get();
-
-        return response()->json($requests);
-    }
-
-    
-    public function show($requestId) {
-        $userId = Auth::id(); 
-        $request = LeaveRequest::where('id', $requestId)
-                               ->where('user_id', $userId)
-                               ->where('answer', 'pending')
-                               ->with('user:id,username') 
-                               ->first();
-    
-        if ($request) {
+                                ->with('user:id,username') 
+                                ->first();
+        if ($requests) {
             return response()->json([
                 "request" => [
-                    'id' => $request->id,
-                    'username' => $request->user->username,
-                    'leave_type' => $request->type->name,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                    'reason' => $request->reason,
-                    'answer' => $request->answer,
+                    'id' => $requests->id,
+                    'username' => $requests->user->username,
+                    'leave_type' => $requests->type->name,
+                    'start_date' => $requests->start_date,
+                    'end_date' => $requests->end_date,
+                    'reason' => $requests->reason,
+                    'answer' => $requests->answer,
                     
                 ],
                 "status" => true,
@@ -50,7 +39,7 @@ class EditMyRequestsController extends Controller
             ], 404);
         }
     }
-    
+
 
     public function update(Request $request, $requestId) {
         $request->validate([
