@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\LeaveType;
+use Carbon\Carbon;
 
 class RequestLeaveController extends Controller{
 
@@ -43,8 +44,24 @@ public function store(Request $request)
         ], 404);
     }
 
-    $leaveRequest = new LeaveRequest();
+    $requestedDays = Carbon::parse($request->start_date)->diffInDays(Carbon::parse($request->end_date)) + 1;
 
+    $totalApprovedDays = LeaveRequest::where('user_id', Auth::user()->id)
+        ->where('leave_type', $leaveType->id)
+        ->where('answer', 'approved')
+        ->get()
+        ->reduce(function ($carry, $item) {
+            return $carry + $item->start_date->diffInDays($item->end_date) + 1;
+        }, 0);
+
+    if (($totalApprovedDays + $requestedDays) > $leaveType->max_days) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You cannot request more than ' . $leaveType->max_days . ' days for this leave type.'
+        ], 400);
+    }
+
+    $leaveRequest = new LeaveRequest();
     $leaveRequest->user_id = Auth::user()->id;
     $leaveRequest->leave_type = $leaveType->id;
     $leaveRequest->start_date = $request->start_date;
@@ -58,7 +75,6 @@ public function store(Request $request)
         'leave_type' => $leaveType->name
     ], 201);
 }
-
 
     public function sendEmail(Request $request){
      
