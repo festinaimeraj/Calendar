@@ -45,7 +45,7 @@ class ApproveDenyRequestsController extends Controller
     public function deny(Request $request){
         $request->validate([
             'request_id' => 'required',
-            'reason' => 'required|string'
+            'response_message' => 'required|string'
         ]);
 
         
@@ -54,7 +54,7 @@ class ApproveDenyRequestsController extends Controller
         if ($leaveRequest && $leaveRequest->answer === 'pending') {
             
             $leaveRequest->answer = 'denied';
-            $leaveRequest->denial_reason = $request->input('reason'); 
+            $leaveRequest->response_message = $request->input('response_message'); 
             $leaveRequest->save();
 
             return response()->json([
