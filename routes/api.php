@@ -58,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:employee')->group(function () {
         Route::get('/my-leave-totals', [MyLeaveTotalsController::class, 'getLeaveTotals']);
     
-        Route::get('/edit-leave-request/{requestId}', [EditMyRequestsController::class, 'index']);
+        Route::get('/edit-leave-request', [EditMyRequestsController::class, 'index']);
         Route::post('/edit-leave-request/{requestId}', [EditMyRequestsController::class, 'update']);
     });
 

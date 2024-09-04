@@ -10,37 +10,45 @@ use App\Models\LeaveRequest;
 class EditMyRequestsController extends Controller
 {
     
-    public function index($requestId) {
+    public function index(Request $request, $requestId = null) {
         $userId = Auth::id(); 
-        $requests = LeaveRequest::where('id', $requestId)
-                                ->where('user_id', $userId)
-                                ->where('answer', 'pending')
-                                ->with('user:id,username') 
-                                ->first();
-        if ($requests) {
-            return response()->json([
-                "request" => [
-                    'id' => $requests->id,
-                    'username' => $requests->user->username,
-                    'leave_type' => $requests->type->name,
-                    'start_date' => $requests->start_date,
-                    'end_date' => $requests->end_date,
-                    'reason' => $requests->reason,
-                    'answer' => $requests->answer,
-                    
-                ],
-                "status" => true,
-                'message' => 'Leave request retrieved successfully.',
-            ]);
+    
+        if ($requestId) {
+            $leaveRequest = LeaveRequest::where('id', $requestId)
+                                        ->where('user_id', $userId)
+                                        ->where('answer', 'pending')
+                                        ->with('user:id,username')
+                                        ->first();
+    
+            if ($leaveRequest) {
+                return response()->json([
+                    "request" => [
+                        'id' => $leaveRequest->id,
+                        'username' => $leaveRequest->user->username,
+                        'leave_type' => $leaveRequest->type->name,
+                        'start_date' => $leaveRequest->start_date,
+                        'end_date' => $leaveRequest->end_date,
+                        'reason' => $leaveRequest->reason,
+                        'answer' => $leaveRequest->answer,
+                    ],
+                    "status" => true,
+                    'message' => 'Leave request retrieved successfully.',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    "message" => "Leave request not found or not pending."
+                ], 404);
+            }
         } else {
-            return response()->json([
-                'status' => false,
-                "message" => "Leave request not found or not pending."
-            ], 404);
+            $leaveRequests = LeaveRequest::where('user_id', $userId)
+                                         ->where('answer', 'pending')
+                                         ->get();
+    
+            return response()->json($leaveRequests);
         }
     }
-
-
+    
     public function update(Request $request, $requestId) {
         $request->validate([
             'start_date' => 'required|date',
