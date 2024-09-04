@@ -153,9 +153,10 @@ class AdminController extends Controller
 
     public function requestLeave()
     {
+        $employees = User::where('role', 'employee')->get();
         $leaveTypes = LeaveType::all();
 
-        return view('admin.request_leave', compact('leaveTypes'));
+        return view('admin.request_leave', ['employees' => $employees, 'leaveTypes' => $leaveTypes,]);
     }
 
     public function submitLeaveRequest(Request $request)
@@ -186,6 +187,7 @@ class AdminController extends Controller
     ]);
 
         $user = Auth::user();
+        $employeeId = $request->employee_id ?: $user->id;
         $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date);
         $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
 
@@ -195,15 +197,16 @@ class AdminController extends Controller
 
         $startDateFormatted = $startDate->format('Y-m-d');
         $endDateFormatted = $endDate->format('Y-m-d');
+   
 
-        $existingRequest = LeaveRequest::where('user_id', $user->id)
+        $existingRequest = LeaveRequest::where('user_id', $employeeId)
         ->where('answer', 'pending') 
-        ->where(function($query) use ($startDate, $endDate) {
-            $query->whereBetween('start_date', [$startDate, $endDate])
-                ->orWhereBetween('end_date', [$startDate, $endDate])
-                ->orWhere(function($query) use ($startDate, $endDate) {
-                    $query->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
+        ->where(function($query) use ($startDateFormatted, $endDateFormatted) {
+            $query->whereBetween('start_date', [$startDateFormatted, $endDateFormatted])
+                ->orWhereBetween('end_date', [$startDateFormatted, $endDateFormatted])
+                ->orWhere(function($query) use ($startDateFormatted, $endDateFormatted) {
+                    $query->where('start_date', '<=', $startDateFormatted)
+                            ->where('end_date', '>=', $endDateFormatted);
                 });
         })
         ->first();
@@ -214,7 +217,7 @@ class AdminController extends Controller
 
         try {
             $leaveRequest = new LeaveRequest();
-            $leaveRequest->user_id =  Auth::user()->id;
+            $leaveRequest->user_id = $employeeId;
             $leaveRequest->leave_type = $request->leave_type;
             $leaveRequest->start_date = $startDate;
             $leaveRequest->end_date = $endDate;

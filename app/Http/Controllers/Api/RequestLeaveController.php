@@ -45,7 +45,7 @@ public function store(Request $request)
     }
 
     $requestedDays = Carbon::parse($request->start_date)->diffInDays(Carbon::parse($request->end_date)) + 1;
-
+//mi shtu employee request
     $totalApprovedDays = LeaveRequest::where('user_id', Auth::user()->id)
         ->where('leave_type', $leaveType->id)
         ->where('answer', 'approved')

@@ -44,8 +44,7 @@ class CalendarController extends Controller
     if (!Auth::check() || Auth::user()->role !== 'admin') {
         return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
     }
-
-    // Log request data for debugging
+    
     Log::info('Update Event Request:', $request->all());
 
     $validatedData = $request->validate([

@@ -69,21 +69,21 @@ class EmployeeController extends Controller
             return response()->json(['error' => 'Invalid date format'], 400);
         }
 
-        $startDateFormatted = $startDate->format('d-m-Y');
-        $endDateFormatted = $endDate->format('d-m-Y');
+        $startDateFormatted = $startDate->format('Y-m-d');
+        $endDateFormatted = $endDate->format('Y-m-d');
+   
 
         $existingRequest = LeaveRequest::where('user_id', $user->id)
         ->where('answer', 'pending') 
-        ->where(function($query) use ($startDate, $endDate) {
-            $query->whereBetween('start_date', [$startDate, $endDate])
-                ->orWhereBetween('end_date', [$startDate, $endDate])
-                ->orWhere(function($query) use ($startDate, $endDate) {
-                    $query->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
+        ->where(function($query) use ($startDateFormatted, $endDateFormatted) {
+            $query->whereBetween('start_date', [$startDateFormatted, $endDateFormatted])
+                ->orWhereBetween('end_date', [$startDateFormatted, $endDateFormatted])
+                ->orWhere(function($query) use ($startDateFormatted, $endDateFormatted) {
+                    $query->where('start_date', '<=', $startDateFormatted)
+                            ->where('end_date', '>=', $endDateFormatted);
                 });
         })
         ->first();
-
     if ($existingRequest) {
         return redirect()->back()->withErrors(['error' => 'You have already submitted a leave request that overlaps with these dates.']);
     }

@@ -20,6 +20,12 @@
        document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var isAdmin = true; // Admin role
+    var editEventModal = $('#editEventModal');
+    var editEventForm = $('#editEventForm');
+    var eventIdInput = $('#eventId');
+    var startDateInput = $('#startDate');
+    var endDateInput = $('#endDate');
+
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         displayEventTime: false,
@@ -43,6 +49,7 @@
                 end_date: info.event.end ? info.event.end.toISOString() : null
             };
 
+            
             fetch('/update_event', {
                 method: 'POST',
                 headers: {
@@ -86,47 +93,137 @@
             .then(data => {
                 if (!data.status) {
                     alert(data.message || 'Failed to update event');
-                    info.revert(); // Revert the event to its original state
+                    info.revert(); 
                 }
             })
             .catch(error => {
                 console.error('Error updating event:', error);
                 alert('Failed to update event. Please try again.');
-                info.revert(); // Revert the event to its original state
+                info.revert(); 
             });
         },
         eventClick: function(info) {
             if (!isAdmin) return;
 
-            if (confirm("Are you sure you want to delete this event?")) {
-                var eventId = info.event.id;
+            eventIdInput.val(info.event.id);
+            startDateInput.val(info.event.startStr.substring(0, 10)); 
+            endDateInput.val(info.event.endStr ? info.event.endStr.substring(0, 10) : '');
 
-                fetch('/delete_event', {
+            editEventModal.modal('show');
+        }
+            });
+
+            calendar.render();
+
+            $('#saveChanges').on('click', function() {
+                var eventId = eventIdInput.val();
+                var startDate = startDateInput.val();
+                var endDate = endDateInput.val();
+
+                fetch('/update_event', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body: JSON.stringify({ id: eventId })
-                })
-                .then(response => response.json())
+                    body: JSON.stringify({
+                        id: eventId,
+                        start_date: startDate,
+                        end_date: endDate
+                    })
+                }).then(response => response.json())
                 .then(data => {
                     if (data.status) {
-                        info.event.remove();
-                        alert(data.message || 'Event deleted successfully');
+                        alert('Event updated successfully');
+                        calendar.refetchEvents(); 
+                        editEventModal.modal('hide');
                     } else {
-                        alert(data.message || 'Failed to delete event');
+                        alert('Failed to update event: ' + data.message);
                     }
-                })
-                .catch(() => {
-                    alert('Failed to delete event');
-                });
-            }
-        }
-    });
+                }).catch(error => console.error('Error:', error));
+            });
 
-    calendar.render();
-});
+            $('#deleteEvent').on('click', function() {
+                var eventId = eventIdInput.val();
+
+                if (confirm("Are you sure you want to delete this event?")) {
+                    fetch('/delete_event', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ id: eventId })
+                    }).then(response => response.json())
+                    .then(data => {
+                        if (data.status) {
+                            alert('Event deleted successfully');
+                            calendar.refetchEvents(); 
+                            editEventModal.modal('hide');
+                        } else {
+                            alert('Failed to delete event: ' + data.message);
+                        }
+                    }).catch(error => console.error('Error:', error));
+                }
+            });
+            $('.modal-footer').on('hidden.bs.modal', function () {
+                editEventForm[0].reset();
+            });
+        });
+
+    
         </script>
     </div>
+
+
+<div id="editEventModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Leave Request</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <div class="container d-flex justify-content-center">
+                    <div class="col-md-12">
+                        <div class="card shadow-sm p-4">
+                <form id="editEventForm">
+                    <input type="hidden" id="eventId" name="eventId">
+                    <div class="form-group mb-3">
+                                    <label for="startDate" class="form-label">Start Date:</label>
+                                    <input type="text" id="startDate" name="start_date" class="form-control" placeholder="yyyy-mm-dd" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="endDate" class="form-label">End Date:</label>
+                                    <input type="text" id="endDate" name="end_date" class="form-control" placeholder="yyyy-mm-dd" required>
+                                </div>
+                </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
+                <button type="button" class="btn btn-danger" id="deleteEvent">Delete Event</button>
+                <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#start_date, #end_date').datepicker({
+            dateFormat: 'dd/mm/yy',
+            beforeShowDay: $.datepicker.noWeekends
+        });
+
+        $('#start_date').on('change', function() {
+            var startDate = $(this).datepicker('getDate');
+            $('#end_date').datepicker('option', 'minDate', startDate);
+            $('#end_date').datepicker('setDate', startDate);
+        });
+    });
+</script>
 @endsection

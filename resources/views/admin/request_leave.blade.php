@@ -27,6 +27,18 @@
 
             <form method="POST" action="{{ route('admin.request_leave.submit') }}" id="leaveForm">
                 @csrf
+
+                <!-- Employee Selection (Optional) -->
+                <div class="form-group mb-3">
+                    <label for="employee" class="form-label">Select Employee (Optional):</label>
+                    <select name="employee_id" id="employee" class="form-select">
+                        <option value="">-- For Admin --</option>
+                        @foreach ($employees as $employee)
+                            <option value="{{ $employee->id }}">{{ $employee->name . ' ' . $employee->surname }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div class="form-group mb-3">
                     <label for="leave_type" class="form-label">Leave Type:</label>
                     <select name="leave_type" id="leave_type" class="form-select" required>
