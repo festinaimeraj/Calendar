@@ -10,33 +10,44 @@ use Illuminate\Support\Facades\Log;
 class CalendarController extends Controller
 {
     public function loadEvents()
-    {
-        $leaveTypeColors = [
-            1 => '#f44336', 
-            2 => '#ff9800',
-            3 => '#4caf50', 
-            4 => '#2196f3', 
-            // Add more 
+{
+    $leaveTypeColors = [
+        1 => '#f44336', 
+        2 => '#ff9800', 
+        3 => '#4caf50', 
+        4 => '#2196f3', 
+        // Add more colors as needed
+    ];
+
+    $user = auth()->user(); 
+    $isAdmin = $user->role === 'admin'; 
+
+    $leaveRequests = $isAdmin
+        ? LeaveRequest::all() 
+        : LeaveRequest::where('user_id', $user->id)
+                      ->orWhere('answer', 'approved')
+                      ->get(); 
+
+    $events = $leaveRequests->map(function ($request) use ($leaveTypeColors) {
+        $leaveTypeId = $request->type->id; 
+  
+        $color = ($request->answer === 'approved') ? 
+            ($leaveTypeColors[$leaveTypeId] ?? '#795548') : 
+            '#9e9e9e';
+
+        return [
+            'id' => $request->id,
+            'title' => $request->user->name . ' ' . $request->user->surname . ' - ' . $request->type->name,
+            'start' => $request->start_date,
+            'end' => $request->end_date,
+            'color' => $color,
         ];
+    });
+
+    return response()->json($events);
+}
+
     
-        $events = LeaveRequest::where('answer', 'approved')
-                            ->get()
-                            ->map(function ($request) use ($leaveTypeColors) {
-                                $leaveTypeId = $request->type->id;
-    
-                                $color = $leaveTypeColors[$leaveTypeId] ?? '#795548';
-    
-                                return [
-                                    'id' => $request->id,
-                                    'title' => $request->user->name.' '.$request->user->surname.'-'.$request->type->name,
-                                    'start' => $request->start_date,
-                                    'end' => $request->end_date,
-                                    'color' => $color,
-                                ];
-                            });
-    
-        return response()->json($events);
-    }
     
     
     public function updateEvent(Request $request)
