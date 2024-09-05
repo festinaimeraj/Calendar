@@ -59,7 +59,9 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     Route::post('/request-leave', [EmployeeController::class, 'submitLeaveRequest'])->name('request_leave.submit'); 
     // Route::get('/my-leave-totals', [EmployeeController::class, 'myLeaveTotals'])->name('my-leave-totals');
     Route::get('/edit-my-requests', [EmployeeController::class, 'editMyRequests'])->name('edit-my-requests');
-    Route::post('/update-my-request', [LeaveRequestController::class, 'update'])->name('update-my-request');
+ 
+Route::post('/edit-my-requests', [LeaveRequestController::class, 'update'])->name('update-my-request');
+
     Route::get('/my-leave-totals', [LeaveController::class, 'showLeaveTotals'])->name('my-leave-totals');
 });
 
