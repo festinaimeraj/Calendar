@@ -25,9 +25,15 @@ class LeaveController extends Controller
         $remainingDaysByType = [];
         
         foreach ($leaveTotals as $leave) {
-            $allocatedDays = $leaveTypeAllocations[$leave->leave_type] ;
-            $remainingDaysByType[$leave->leave_type] = $allocatedDays - $leave->total_days;            
-        } 
+            $allocatedDays = $leaveTypeAllocations[$leave->leave_type];
+    
+            if ($allocatedDays === 'Unlimited') {
+                $remainingDaysByType[$leave->leave_type] = 'Unlimited';
+            } else {
+                $remainingDays = max(0, $allocatedDays - $leave->total_days);
+                $remainingDaysByType[$leave->leave_type] = $remainingDays;
+            }
+        }
 
         return view('employee.my-leave-totals', compact('leaveTotals', 'remainingDaysByType'));
     }
