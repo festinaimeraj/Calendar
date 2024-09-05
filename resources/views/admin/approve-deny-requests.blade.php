@@ -31,8 +31,8 @@
                         <label for="response">Response:</label>
                         <textarea name="response" required></textarea>
                         <div class="form-buttons">
-                            <input type="submit" name="action" value="approve" class="button approve-button">
-                            <input type="submit" name="action" value="deny" class="button deny-button">
+                            <input type="submit" name="action" value="Approve" class="button approve-button">
+                            <input type="submit" name="action" value="Deny" class="button deny-button">
                         </div>
                     </form>
                 </div>

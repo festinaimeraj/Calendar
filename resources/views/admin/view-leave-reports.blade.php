@@ -66,8 +66,8 @@
                             @foreach($groupData['requests'] as $request)
                             <tr>
                                 <td>{{ $request['leave_type'] }}</td>
-                                <td>{{ $request['start_date'] }}</td>
-                                <td>{{ $request['end_date'] }}</td>
+                                <td>{{ \Carbon\Carbon::parse($request['start_date'])->format('d/m/Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($request['end_date'])->format('d/m/Y') }}</td>
                                 <td>{{ $request['requested_days'] }}</td>
                                 <td>{{ $request['answer'] }}</td>
                             </tr>

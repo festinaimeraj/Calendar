@@ -198,6 +198,19 @@ class AdminController extends Controller
         $startDateFormatted = $startDate->format('Y-m-d');
         $endDateFormatted = $endDate->format('Y-m-d');
    
+        $interval = $startDate->diff($endDate);
+        $daysRequested = $interval->days + 1;
+    
+        $leaveType = LeaveType::find($request->leave_type); 
+        if (!$leaveType) {
+            return redirect()->back()->withErrors(['error' => 'Invalid leave type.']);
+        }
+    
+        $maxDays = $leaveType->max_days;
+    
+        if ($daysRequested > $maxDays) {
+            return redirect()->back()->withErrors(['error' => "You can't request more than $maxDays days for this leave type."]);
+        }
 
         $existingRequest = LeaveRequest::where('user_id', $employeeId)
         ->where('answer', 'pending') 
@@ -218,7 +231,7 @@ class AdminController extends Controller
         try {
             $leaveRequest = new LeaveRequest();
             $leaveRequest->user_id = $employeeId;
-            $leaveRequest->leave_type = $request->leave_type;
+            $leaveRequest->leave_type = $leaveType->id; 
             $leaveRequest->start_date = $startDate;
             $leaveRequest->end_date = $endDate;
             $leaveRequest->reason = $request->reason;

@@ -35,12 +35,14 @@ class EmployeeController extends Controller
     }
 
     public function submitLeaveRequest(Request $request)
-    {
-        $currentYear = date('Y');
+{
+    $currentYear = date('Y');
 
-        
     $request->validate([
-        'leave_type' => 'required',
+        'leave_type' => [
+            'required',
+            'exists:leave_types,id' 
+        ],
         'start_date' => [
             'required',
             'date_format:d/m/Y',
@@ -61,113 +63,123 @@ class EmployeeController extends Controller
         'end_date.after_or_equal' => 'The end date must be after or equal to the start date.',
     ]);
 
-        $user = Auth::user();
-        $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date);
-        $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
+    $user = Auth::user();
+    $startDate = \DateTime::createFromFormat('d/m/Y', $request->start_date);
+    $endDate = \DateTime::createFromFormat('d/m/Y', $request->end_date);
 
-        if ($startDate === false || $endDate === false) {
-            return response()->json(['error' => 'Invalid date format'], 400);
-        }
+    if ($startDate === false || $endDate === false) {
+        return response()->json(['error' => 'Invalid date format'], 400);
+    }
 
-        $startDateFormatted = $startDate->format('Y-m-d');
-        $endDateFormatted = $endDate->format('Y-m-d');
-   
+    $startDateFormatted = $startDate->format('Y-m-d');
+    $endDateFormatted = $endDate->format('Y-m-d');
 
-        $existingRequest = LeaveRequest::where('user_id', $user->id)
-        ->where('answer', 'pending') 
+    $interval = $startDate->diff($endDate);
+    $daysRequested = $interval->days + 1;
+
+    $leaveType = LeaveType::find($request->leave_type); 
+    if (!$leaveType) {
+        return redirect()->back()->withErrors(['error' => 'Invalid leave type.']);
+    }
+
+    $maxDays = $leaveType->max_days;
+
+    if ($daysRequested > $maxDays) {
+        return redirect()->back()->withErrors(['error' => "You can't request more than $maxDays days for this leave type."]);
+    }
+
+    $existingRequest = LeaveRequest::where('user_id', $user->id)
+        ->where('answer', 'pending')
         ->where(function($query) use ($startDateFormatted, $endDateFormatted) {
             $query->whereBetween('start_date', [$startDateFormatted, $endDateFormatted])
                 ->orWhereBetween('end_date', [$startDateFormatted, $endDateFormatted])
                 ->orWhere(function($query) use ($startDateFormatted, $endDateFormatted) {
                     $query->where('start_date', '<=', $startDateFormatted)
-                            ->where('end_date', '>=', $endDateFormatted);
+                          ->where('end_date', '>=', $endDateFormatted);
                 });
         })
         ->first();
+
     if ($existingRequest) {
         return redirect()->back()->withErrors(['error' => 'You have already submitted a leave request that overlaps with these dates.']);
     }
 
-        try {
-            $leaveRequest = new LeaveRequest();
-            $leaveRequest->user_id =  Auth::user()->id;
-            $leaveRequest->leave_type = $request->leave_type;
-            $leaveRequest->start_date = $startDate;
-            $leaveRequest->end_date = $endDate;
-            $leaveRequest->reason = $request->reason;
-            $leaveRequest->answer = 'pending';
-            $leaveRequest->save();
+    try {
+        $leaveRequest = new LeaveRequest();
+        $leaveRequest->user_id = $user->id;
+        $leaveRequest->leave_type = $leaveType->id; 
+        $leaveRequest->start_date = $startDateFormatted;
+        $leaveRequest->end_date = $endDateFormatted;
+        $leaveRequest->reason = $request->reason;
+        $leaveRequest->answer = 'pending';
+        $leaveRequest->save();
 
-            $leaveTypeName = $leaveRequest->type->name;
+        $leaveTypeName = $leaveType->name;
 
-            $adminEmail = 'festinaimeraj1@gmail.com'; 
-            $subject = 'New Leave Request';
-            $body = "
-            <html>
-                <head>
-                    <style>
-                        .email-container {
-                            font-family: Arial, sans-serif;
-                            line-height: 1.6;
-                            color: #333;
-                        }
-                        .email-header {
-                            background-color: #f2f2f2;
-                            padding: 10px;
-                            text-align: center;
-                        }
-                        .email-body {
-                            padding: 20px;
-                        }
-                        .email-footer {
-                            background-color: #f2f2f2;
-                            padding: 10px;
-                            text-align: center;
-                        }
-                        .email-title {
-                            color: #444;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class='email-container'>
-                        <div class='email-header'>
-                            <h2 class='email-title'>New Leave Request</h2>
-                        </div>
-                        <div class='email-body'>
-                            <p>Dear Admin,</p>
-                            <p><strong>{$user->name} {$user->surname}</strong> has requested leave.</p>
-                            <p><strong>Leave Type:</strong> {$leaveTypeName}</p>
-                            <p><strong>Start Date:</strong> {$startDateFormatted}</p>
-                            <p><strong>End Date:</strong> {$endDateFormatted}</p>
-                            <p><strong>Reason:</strong> {$request->reason}</p>
-                        </div>
-                        <div class='email-footer'>
-                            <p>This is an automated message. Please do not reply.</p>
-                        </div>
+        $adminEmail = 'admin@example.com'; 
+        $subject = 'New Leave Request';
+        $body = "
+        <html>
+            <head>
+                <style>
+                    .email-container {
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #333;
+                    }
+                    .email-header {
+                        background-color: #f2f2f2;
+                        padding: 10px;
+                        text-align: center;
+                    }
+                    .email-body {
+                        padding: 20px;
+                    }
+                    .email-footer {
+                        background-color: #f2f2f2;
+                        padding: 10px;
+                        text-align: center;
+                    }
+                    .email-title {
+                        color: #444;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <div class='email-header'>
+                        <h2 class='email-title'>New Leave Request</h2>
                     </div>
-                </body>
-            </html>
-            ";
+                    <div class='email-body'>
+                        <p>Dear Admin,</p>
+                        <p><strong>{$user->name} {$user->surname}</strong> has requested leave.</p>
+                        <p><strong>Leave Type:</strong> {$leaveTypeName}</p>
+                        <p><strong>Start Date:</strong> {$startDateFormatted}</p>
+                        <p><strong>End Date:</strong> {$endDateFormatted}</p>
+                        <p><strong>Reason:</strong> {$request->reason}</p>
+                    </div>
+                    <div class='email-footer'>
+                        <p>This is an automated message. Please do not reply.</p>
+                    </div>
+                </div>
+            </body>
+        </html>
+        ";
 
-            Mail::send([], [], function($message) use ($adminEmail, $subject, $body) {
-                $message->to($adminEmail)
-                        ->subject($subject)
-                        ->html($body);
-            });
+        Mail::send([], [], function($message) use ($adminEmail, $subject, $body) {
+            $message->to($adminEmail)
+                    ->subject($subject)
+                    ->html($body);
+        });
 
-            session()->flash('status', 'Your leave request has been submitted successfully and is pending approval.');
+        session()->flash('status', 'Your leave request has been submitted successfully and is pending approval.');
+        return redirect()->back();
 
-            if ($user->role === 'admin') {
-                return redirect()->back();
-            } else {
-                return redirect()->back();
-            } 
-        } catch (\Exception $e) {
-            Log::error('Error saving leave request: ' . $e->getMessage());
-            return redirect()->back()->withErrors(['error' => 'Failed to save leave request.']);
-        }
+    } catch (\Exception $e) {
+        Log::error('Error saving leave request: ' . $e->getMessage());
+        return redirect()->back()->withErrors(['error' => 'Failed to save leave request.']);
     }
+}
 
 
 
