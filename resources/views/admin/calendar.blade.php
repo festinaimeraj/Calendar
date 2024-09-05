@@ -109,6 +109,8 @@
             startDateInput.val(info.event.startStr.substring(0, 10)); 
             endDateInput.val(info.event.endStr ? info.event.endStr.substring(0, 10) : '');
 
+            $('#reason').val(info.event.extendedProps.reason || '');
+
             editEventModal.modal('show');
         }
             });
@@ -192,13 +194,17 @@
                 <form id="editEventForm">
                     <input type="hidden" id="eventId" name="eventId">
                     <div class="form-group mb-3">
-                                    <label for="startDate" class="form-label">Start Date:</label>
-                                    <input type="text" id="startDate" name="start_date" class="form-control" placeholder="yyyy-mm-dd" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="endDate" class="form-label">End Date:</label>
-                                    <input type="text" id="endDate" name="end_date" class="form-control" placeholder="yyyy-mm-dd" required>
-                                </div>
+                        <label for="reason" class="form-label">Reason:</label>
+                        <input type="text" id="reason" name="reason" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="startDate" class="form-label">Start Date:</label>
+                        <input type="text" id="startDate" name="start_date" class="form-control" placeholder="yyyy-mm-dd" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="endDate" class="form-label">End Date:</label>
+                        <input type="text" id="endDate" name="end_date" class="form-control" placeholder="yyyy-mm-dd" required>
+                    </div>
                 </form>
                         </div>
                     </div>

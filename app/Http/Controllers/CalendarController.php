@@ -40,6 +40,7 @@ class CalendarController extends Controller
             'title' => $request->user->name . ' ' . $request->user->surname . ' - ' . $request->type->name,
             'start' => $request->start_date,
             'end' => $request->end_date,
+            'reason' => $request->reason,
             'color' => $color,
         ];
     });
