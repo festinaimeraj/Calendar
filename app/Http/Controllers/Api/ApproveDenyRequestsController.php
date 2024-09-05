@@ -66,7 +66,7 @@ class ApproveDenyRequestsController extends Controller
         }
     
         
-        $leaveRequest = LeaveRequest::find($request->request_id);
+        $leaveRequest = LeaveRequest::find($request->id);
 
         if ($leaveRequest && $leaveRequest->answer === 'pending') {
             
