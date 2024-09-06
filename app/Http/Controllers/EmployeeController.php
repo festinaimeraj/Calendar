@@ -116,7 +116,7 @@ class EmployeeController extends Controller
 
         $leaveTypeName = $leaveType->name;
 
-        $adminEmail = 'admin@example.com'; 
+        $adminEmail = 'festinaimeraj1@gmail.com'; 
         $subject = 'New Leave Request';
         $body = "
         <html>
