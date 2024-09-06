@@ -22,22 +22,29 @@ class AdminReportController extends Controller
     
         foreach ($users as $user) {
             $totalDaysUsed = DB::table('leave_requests')
+                ->join('leave_types', 'leave_requests.leave_type', '=', 'leave_types.id')
                 ->where('user_id', $user->id)
-                ->where('leave_type', '!=', 'flex')
+                ->where('leave_types.name', '!=', 'flex')
                 ->where('answer', '!=', 'pending')
                 ->where('answer' , '!=', 'denied')
-                ->selectRaw('leave_type, SUM(DATEDIFF(end_date, start_date) + 1) as aggregate')
-                ->groupBy('leave_type')
+                ->selectRaw('leave_types.name as leave_type, SUM(DATEDIFF(end_date, start_date) + 1) as aggregate')
+                ->groupBy('leave_types.name')
                 ->get();
     
-            $leaveRequests = LeaveRequest::where('user_id', $user->id)
+                $leaveRequests = DB::table('leave_requests')
+                ->join('leave_types', 'leave_requests.leave_type', '=', 'leave_types.id') 
+                ->where('user_id', $user->id)
                 ->when($leaveType, function ($query) use ($leaveType) {
-                    return $query->where('leave_type', $leaveType);
+                    return $query->where('leave_types.name', $leaveType);  
                 })
-                ->get(['leave_type', 'start_date', 'end_date', 'answer', DB::raw('DATEDIFF(end_date, start_date) + 1 as requested_days')]);
+                ->select('leave_types.name as leave_type', 'leave_requests.start_date', 'leave_requests.end_date', 'leave_requests.answer', DB::raw('DATEDIFF(end_date, start_date) + 1 as requested_days'))
+                ->get();
     
             $results[] = [
                 'username' => $user->username,
+                'name' => $user->name,
+                'surname' => $user->surname,
+                'email' => $user->email,
                 'total_days_used' => $totalDaysUsed,
                 'leave_requests' => $leaveRequests,
             ];
@@ -52,7 +59,7 @@ class AdminReportController extends Controller
     
     public function showReport() {
         
-        $requestsGrouped = LeaveRequest::with('user') 
+        $requestsGrouped = LeaveRequest::with('user', 'type') 
         ->get()
         ->groupBy(function ($leave) {
             return $leave->user->username; 
@@ -60,7 +67,7 @@ class AdminReportController extends Controller
         ->map(function ($leaves, $username) {
             return $leaves->map(function ($leave) {
                 return [
-                    'leave_type' => $leave->leave_type,
+                    'leave_type' => $leave->type->name,
                     'start_date' => $leave->start_date,
                     'end_date' => $leave->end_date,
                     'requested_days' => $leave->start_date->diffInDays($leave->end_date) + 1, 
