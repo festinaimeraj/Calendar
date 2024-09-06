@@ -15,6 +15,8 @@ class ApproveDenyRequestsController extends Controller
         $formattedRequests = $requests->map(function($request) {
             return [
                 'id' => $request->id,
+                'name' => $request->user->name,
+                'surname' => $request->user->surname,
                 'leave_type' => $request->type->name, 
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
