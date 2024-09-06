@@ -22,8 +22,10 @@ class MyLeaveTotalsController extends Controller
 
         $leaveTotals = [];
 
-        foreach ($leaveTypes as $leaveType) {
-            $requests = LeaveRequest::where('leave_type', $leaveType)
+        foreach ($leaveTypes as $leaveTypeId) {
+            $leaveTypeName = LeaveType::where('id', $leaveTypeId)->value('name');
+
+            $requests = LeaveRequest::where('leave_type', $leaveTypeId)
                                     ->where('user_id', $userId)
                                     ->where('answer', 'approved')
                                     ->get();
@@ -32,14 +34,13 @@ class MyLeaveTotalsController extends Controller
                 return Carbon::parse($request->end_date)->diffInDays(Carbon::parse($request->start_date)) + 1;
             });
 
-            $maxLeaveDays = LeaveType::where('id', $leaveType)->value('max_days');
-
+            $maxLeaveDays = LeaveType::where('id', $leaveTypeId)->value('max_days');
             $maxLeaveDays = $maxLeaveDays ?? 0;
 
             $remainingDays = $maxLeaveDays - $totalDaysUsed;
 
             $leaveTotals[] = [
-                "leave_type" => $leaveType,
+                "leave_type" => $leaveTypeName,
                 "total_days_used" => $totalDaysUsed,
                 "remaining_days" => $remainingDays,
                 "max_days" => $maxLeaveDays, 

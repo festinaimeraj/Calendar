@@ -17,7 +17,7 @@ class EditMyRequestsController extends Controller
             $leaveRequest = LeaveRequest::where('id', $requestId)
                                         ->where('user_id', $userId)
                                         ->where('answer', 'pending')
-                                        ->with('user:id,username')
+                                        ->with(['user:id,username', 'type:id,name'])
                                         ->first();
     
             if ($leaveRequest) {
@@ -43,9 +43,20 @@ class EditMyRequestsController extends Controller
         } else {
             $leaveRequests = LeaveRequest::where('user_id', $userId)
                                          ->where('answer', 'pending')
+                                         ->with('type:id,name')
                                          ->get();
     
-            return response()->json($leaveRequests);
+            $formattedRequests = $leaveRequests->map(function($leaveRequest) {
+            return [
+                'id' => $leaveRequest->id,
+                'leave_type' => $leaveRequest->type->name, 
+                'start_date' => $leaveRequest->start_date,
+                'end_date' => $leaveRequest->end_date,
+                'reason' => $leaveRequest->reason,
+                'answer' => $leaveRequest->answer,
+            ];
+        });
+            return response()->json($formattedRequests);
         }
     }
     

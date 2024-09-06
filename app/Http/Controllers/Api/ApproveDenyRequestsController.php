@@ -9,8 +9,20 @@ use Illuminate\Support\Facades\Validator;
 class ApproveDenyRequestsController extends Controller
 {
     public function index(){
-        $requests = LeaveRequest::where('answer', 'pending')->get();
-        return response()->json($requests);
+        $requests = LeaveRequest::where('answer', 'pending')
+        ->with('type:id,name')
+        ->get();
+        $formattedRequests = $requests->map(function($request) {
+            return [
+                'id' => $request->id,
+                'leave_type' => $request->type->name, 
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'reason' => $request->reason,
+                'answer' => $request->answer,
+            ];
+        });
+        return response()->json($formattedRequests);
     }
 
     
@@ -30,7 +42,8 @@ class ApproveDenyRequestsController extends Controller
                 ], 401);
             }
         
-        $leaveRequest = LeaveRequest::find($request->id);
+        $leaveRequest = LeaveRequest::with('type:id,name')
+                                    ->find($request->id);
 
         if ($leaveRequest && $leaveRequest->answer === 'pending') {
             
@@ -40,7 +53,14 @@ class ApproveDenyRequestsController extends Controller
             return response()->json([
                 'status' => true,
                 "message" => "Leave request approved successfully",
-                "request" => $leaveRequest
+                "request" => [
+                    'id' => $leaveRequest->id,
+                    'leave_type' => $leaveRequest->type->name, 
+                    'start_date' => $leaveRequest->start_date,
+                    'end_date' => $leaveRequest->end_date,
+                    'reason' => $leaveRequest->reason,
+                    'answer' => $leaveRequest->answer,
+                ]
             ], 200);
         } else {
             return response()->json([
@@ -66,7 +86,8 @@ class ApproveDenyRequestsController extends Controller
         }
     
         
-        $leaveRequest = LeaveRequest::find($request->id);
+        $leaveRequest = LeaveRequest::with('type:id,name') 
+                                    ->find($request->id);
 
         if ($leaveRequest && $leaveRequest->answer === 'pending') {
             
@@ -77,8 +98,16 @@ class ApproveDenyRequestsController extends Controller
             return response()->json([
                 'status' => true,
                 "message" => "Leave request denied successfully",
-                "request" => $leaveRequest
-            ] , 200);
+                "request" => [
+                    'id' => $leaveRequest->id,
+                    'leave_type' => $leaveRequest->type->name, 
+                    'start_date' => $leaveRequest->start_date,
+                    'end_date' => $leaveRequest->end_date,
+                    'reason' => $leaveRequest->reason,
+                    'answer' => $leaveRequest->answer,
+                    'response_message' => $leaveRequest->response_message,
+                ]
+            ], 200);
         } else {
             return response()->json([
                 'status' => false,
