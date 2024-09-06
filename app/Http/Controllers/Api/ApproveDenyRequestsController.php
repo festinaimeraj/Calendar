@@ -55,6 +55,8 @@ class ApproveDenyRequestsController extends Controller
                 "message" => "Leave request approved successfully",
                 "request" => [
                     'id' => $leaveRequest->id,
+                    'name' => $leaveRequest->user->name,
+                    'surname' => $leaveRequest->user->surname,
                     'leave_type' => $leaveRequest->type->name, 
                     'start_date' => $leaveRequest->start_date,
                     'end_date' => $leaveRequest->end_date,
@@ -100,6 +102,8 @@ class ApproveDenyRequestsController extends Controller
                 "message" => "Leave request denied successfully",
                 "request" => [
                     'id' => $leaveRequest->id,
+                    'name' => $leaveRequest->user->name,
+                    'surname' => $leaveRequest->user->surname,
                     'leave_type' => $leaveRequest->type->name, 
                     'start_date' => $leaveRequest->start_date,
                     'end_date' => $leaveRequest->end_date,
