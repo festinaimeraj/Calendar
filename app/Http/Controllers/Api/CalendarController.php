@@ -17,10 +17,13 @@ class CalendarController extends Controller
             // Add more 
         ];
     
-        $events = LeaveRequest::where('answer', 'approved')
-                            ->get()
-                            ->map(function ($request) use ($leaveTypeColors) {
-                                $leaveTypeId = $request->type->id;
+        if (auth()->user()->role == 'admin') {
+            $leaveRequests = LeaveRequest::whereIn('answer', ['approved', 'pending'])->get();
+        } else {
+            $leaveRequests = LeaveRequest::where('answer', 'approved')->get();
+        }
+        $events = $leaveRequests->map(function ($request) use ($leaveTypeColors) {
+            $leaveTypeId = $request->type->id;
     
                                 $color = $leaveTypeColors[$leaveTypeId] ?? '#795548';
     
@@ -29,6 +32,7 @@ class CalendarController extends Controller
                                     'title' => $request->user->name.' '.$request->user->surname.'-'.$request->type->name,
                                     'start' => $request->start_date,
                                     'end' => $request->end_date,
+                                    'answer' => $request->answer,
                                     'color' => $color,
                                 ];
                             });
