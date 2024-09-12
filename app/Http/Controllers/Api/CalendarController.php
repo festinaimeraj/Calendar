@@ -46,12 +46,15 @@ class CalendarController extends Controller
             'id' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date',
+            'leave_type' => 'required|integer|exists:leave_types:id'
         ]);
 
         $leaveRequest = LeaveRequest::find($validated['id']);
         if ($leaveRequest) {
             $leaveRequest->start_date = $validated['start_date'];
             $leaveRequest->end_date = $validated['end_date'] ?? $leaveRequest->end_date;
+            $leaveRequest->leave_type = $validated['leave_type']; 
+
             $leaveRequest->save();
 
             return response()->json(['success' => true, 'message' => 'Leave request updated successfully.']);
