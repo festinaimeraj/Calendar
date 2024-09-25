@@ -68,9 +68,6 @@ class UserController extends Controller
         try{
             $validateUser = Validator::make($request->all(),
             [
-                'name' => 'required',
-                'surname' => 'required|string|max:255',
-                'username' => 'required|string|max:255|unique:users',
                 'email' => 'required|email',
                 'password' => 'required'
             ]);
@@ -95,6 +92,9 @@ class UserController extends Controller
                 'status' => true,
                 'message' => 'User Logged in Successfully',
                 'role' => $user->role,
+                'name' => $user->name,
+                'surname' => $user->surname,
+                'username' => $user->username,
                 'token' =>$user->createToken("API TOKEN")->plainTextToken
             ],200);
         } catch (\Throwable $th) {
