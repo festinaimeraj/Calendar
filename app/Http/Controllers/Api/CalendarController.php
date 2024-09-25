@@ -51,6 +51,13 @@ class CalendarController extends Controller
         ]);
 
         $leaveRequest = LeaveRequest::find($validated['id']);
+        if ($leaveRequest->end_date < now()->toDateString()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Leave request cannot be edited after it has ended.'
+            ], 403);
+        }
+
         if ($leaveRequest) {
             $leaveRequest->start_date = $validated['start_date'];
             $leaveRequest->end_date = $validated['end_date'] ?? $leaveRequest->end_date;
