@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\LeaveType;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\GenericMail;
 
 class RequestLeaveController extends Controller{
 
@@ -69,28 +71,67 @@ public function store(Request $request)
     $leaveRequest->reason = $request->reason;
     $leaveRequest->save();
 
+    $user = Auth::user(); 
+    $email = $user->email;
+    $fullName = $user->name . ' ' . $user->surname;
+    $leaveTypeName = $leaveType->name;
+    $startDate = Carbon::parse($leaveRequest->start_date)->format('Y-m-d');
+    $endDate = Carbon::parse($leaveRequest->end_date)->format('Y-m-d');
+
+    $subject = 'Leave Request Submitted Successfully';
+    $body = "
+    <html>
+        <head>
+            <style>
+                .email-container {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                }
+                .email-header {
+                    background-color: #f2f2f2;
+                    padding: 10px;
+                    text-align: center;
+                }
+                .email-body {
+                    padding: 20px;
+                }
+                .email-footer {
+                    background-color: #f2f2f2;
+                    padding: 10px;
+                    text-align: center;
+                }
+                .email-title {
+                    color: #444;
+                }
+            </style>
+        </head>
+        <body>
+            <div class='email-container'>
+                <div class='email-header'>
+                    <h2 class='email-title'>Leave Request Submitted</h2>
+                </div>
+                <div class='email-body'>
+                    <p>Dear {$fullName},</p>
+                    <p>Your leave request for <strong>{$leaveTypeName}</strong> has been submitted successfully.</p>
+                    <p><strong>Start Date:</strong> {$startDate}</p>
+                    <p><strong>End Date:</strong> {$endDate}</p>
+                    <p><strong>Reason:</strong> {$leaveRequest->reason}</p>
+                </div>
+                <div class='email-footer'>
+                    <p>This is an automated message. Please do not reply.</p>
+                </div>
+            </div>
+        </body>
+    </html>
+    ";
+
+    Mail::to($email)->send(new GenericMail($subject, $body));
     return response()->json([
         'status' => true,
         'message' => 'Leave request created successfully.',
         'leave_type' => $leaveType->name
     ], 201);
 }
-
-    public function sendEmail(Request $request){
-     
-        $request->validate([
-            'email' => 'required|email',
-        ]);
-        return response()->json([
-            'status' => true,
-            'message' => 'Email sent successfully',
-        ]);
-    }
 }
-
-
-
-
-
-
 ?>
