@@ -1,6 +1,6 @@
 # Calendar Leave Management System
 
-This web application is a Calendar Leave Management System developed with Laravel. It provides user roles (Admin and Employee), leave request and management functionalities, and a calendar interface to view and manage leave requests.
+This web application is a Calendar Leave Management System developed with Laravel. It provides user roles (Admin and Employee), leave request and management functionalities, and a calendar interface to view and manage leave requests. Also it includes several API endpoints to manage users, leave requests, and calendar data.
 
 ## Features
 
@@ -57,7 +57,7 @@ This web application is a Calendar Leave Management System developed with Larave
     php artisan key:generate
  - **Database Migration & Seeding**
 
-    php artisan migrate --seed
+    php artisan migrate
  - **Run the Server**
    
     php artisan serve
