@@ -33,27 +33,33 @@ This web application is a Calendar Leave Management System developed with Larave
 
 1. **Clone the Repository**
 2. **Install Dependencies**
+
    composer install    
    npm install
-3. **Environment Setup**
-    Copy the .env.example file to .env
- **Set up the database connection details in .env:**
+4. **Environment Setup**
+
+   Copy the .env.example file to .env
+- **Set up the database connection details in .env:**
+  
     DB_CONNECTION=mysql
     DB_HOST=127.0.0.1
     DB_PORT=3306
     DB_DATABASE=your_database_name
     DB_USERNAME=your_database_user
     DB_PASSWORD=your_database_password
- **Generate application key:**
+ - **Generate application key:**
+
     php artisan key:generate
- **Database Migration & Seeding**
+ - **Database Migration & Seeding**
+
     php artisan migrate --seed
- **Run the Server**
+ - **Run the Server**
+   
     php artisan serve
     npm run dev
-**Usage**
-    Access the Application: Open http://127.0.0.1:8000 in your browser.
-    Login as Admin or Employee: Use the credentials set during seeding or registration.
+- **Usage**
+- Access the Application: Open http://127.0.0.1:8000 in your browser.
+- Login as Admin or Employee: Use the credentials set during seeding or registration.
 
 
 
