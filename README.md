@@ -61,6 +61,41 @@ This web application is a Calendar Leave Management System developed with Larave
 - Access the Application: Open http://127.0.0.1:8000 in your browser.
 - Login as Admin or Employee: Use the credentials set during seeding or registration.
 
+## Admin Calendar View
+
+The admin can view all employee leaves on a calendar, with different colors representing different leave types (e.g., "Flex" leave in green, "Medical" leave in orange).
+
+![admin_calendar](https://github.com/user-attachments/assets/feade1b8-5ccf-4711-a1a5-c57fcec37b04)
+
+
+## Edit Leave Request
+
+![edit_request](https://github.com/user-attachments/assets/48288037-00a1-4648-98a3-f41a900e4a9c)
+
+## Show employees
+
+![employees](https://github.com/user-attachments/assets/4213da09-2ed3-4cb5-b8db-1d2230e1029a)
+
+## Request a leave
+
+![request_leave](https://github.com/user-attachments/assets/b37c0a10-c506-4a4e-adc5-111bf7ab41d3)
+
+## Approve or deny the requests
+
+![approve](https://github.com/user-attachments/assets/74bad4af-2272-44ba-857e-05f23205900d)
+
+## Leave report for each employee
+
+![report](https://github.com/user-attachments/assets/9985f399-43c4-4ed9-b1b9-c4fe637eb3d6)
+
+## Leave types
+
+![leave_types](https://github.com/user-attachments/assets/f067587d-cd1a-43e7-b665-0b4ce7af14ed)
+
+
+
+
+
 
 
 
