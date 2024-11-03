@@ -1,6 +1,6 @@
 # Calendar Leave Management System
 
-This web application is a Calendar Leave Management System developed with Laravel and FullCalendar. It provides user roles (Admin and Employee), leave request and management functionalities, and a calendar interface to view and manage leave requests.
+This web application is a Calendar Leave Management System developed with Laravel. It provides user roles (Admin and Employee), leave request and management functionalities, and a calendar interface to view and manage leave requests.
 
 ## Features
 
@@ -42,10 +42,15 @@ This web application is a Calendar Leave Management System developed with Larave
 - **Set up the database connection details in .env:**
   
     DB_CONNECTION=mysql
+  
     DB_HOST=127.0.0.1
+  
     DB_PORT=3306
+
     DB_DATABASE=your_database_name
+
     DB_USERNAME=your_database_user
+
     DB_PASSWORD=your_database_password
  - **Generate application key:**
 
@@ -63,7 +68,7 @@ This web application is a Calendar Leave Management System developed with Larave
 
 ## Admin Calendar View
 
-The admin can view all employee leaves on a calendar, with different colors representing different leave types (e.g., "Flex" leave in green, "Medical" leave in orange).
+The admin can view and edit all employee leaves on a calendar, with different colors representing different leave types (e.g., "Flex" leave in green, "Medical" leave in orange).
 
 ![admin_calendar](https://github.com/user-attachments/assets/feade1b8-5ccf-4711-a1a5-c57fcec37b04)
 
@@ -72,7 +77,7 @@ The admin can view all employee leaves on a calendar, with different colors repr
 
 ![edit_request](https://github.com/user-attachments/assets/48288037-00a1-4648-98a3-f41a900e4a9c)
 
-## Show employees
+## Manage employees
 
 ![employees](https://github.com/user-attachments/assets/4213da09-2ed3-4cb5-b8db-1d2230e1029a)
 
@@ -80,7 +85,7 @@ The admin can view all employee leaves on a calendar, with different colors repr
 
 ![request_leave](https://github.com/user-attachments/assets/b37c0a10-c506-4a4e-adc5-111bf7ab41d3)
 
-## Approve or deny the requests
+## Approve or deny the leave requests
 
 ![approve](https://github.com/user-attachments/assets/74bad4af-2272-44ba-857e-05f23205900d)
 
@@ -93,10 +98,29 @@ The admin can view all employee leaves on a calendar, with different colors repr
 ![leave_types](https://github.com/user-attachments/assets/f067587d-cd1a-43e7-b665-0b4ce7af14ed)
 
 
+## Employee Calendar View
+
+![employee](https://github.com/user-attachments/assets/57b44ad8-6682-4e36-8e84-c89854ecc9ff)
+
+## Request a leave
+
+![request_leave](https://github.com/user-attachments/assets/0231419a-a818-4cc9-9982-28e4476dca5c)
+
+## Employee's leave totals
+
+![leave_totals](https://github.com/user-attachments/assets/7ad71254-0fc3-4662-a198-2086b799e18e)
+
+## Edit my pending requests
+
+![image](https://github.com/user-attachments/assets/94475680-ef04-4c01-ac0b-6a2b19f4a9f2)
 
 
+**Also, it has a mail functionality:**
+- When the employee requests a leave, an email goes to admin.
+- When the admin approves/denies a leave request, an email is sent to employee.
 
+![image](https://github.com/user-attachments/assets/e5c6e0a0-05c3-41c7-9875-9cfa15c1c054)
 
-
+![image](https://github.com/user-attachments/assets/bda04f43-0360-4338-adc5-6861176c00d9)
 
 
