@@ -68,7 +68,7 @@ This web application is a Calendar Leave Management System developed with Larave
 
 ## Admin Calendar View
 
-The admin can view and edit all employee leaves on a calendar, with different colors representing different leave types (e.g., "Flex" leave in green, "Medical" leave in orange).
+The admin can view and edit all employee leaves on a calendar, with different colors representing different leave types.
 
 ![admin_calendar](https://github.com/user-attachments/assets/feade1b8-5ccf-4711-a1a5-c57fcec37b04)
 
